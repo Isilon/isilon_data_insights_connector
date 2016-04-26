@@ -60,9 +60,9 @@ class UpdateInterval(object):
         self.last_update = 0.0
 
 
-class IsiPerfStatsDaemon(run.RunDaemon):
+class IsiDataInsightsDaemon(run.RunDaemon):
     """
-    Periodically query a list of OneFS clusters for performance statistics and
+    Periodically query a list of OneFS clusters for statistics and
     process them via a configurable stats processor module.
     """
     def __init__(self, pidfile):
@@ -70,7 +70,7 @@ class IsiPerfStatsDaemon(run.RunDaemon):
         Initialize.
         :param: pidfile is the path to the daemon's pidfile (required).
         """
-        super(IsiPerfStatsDaemon, self).__init__(pidfile=pidfile)
+        super(IsiDataInsightsDaemon, self).__init__(pidfile=pidfile)
         self._stat_sets = {}
         self._update_intervals = []
         self._stats_processor = None
@@ -171,7 +171,7 @@ class IsiPerfStatsDaemon(run.RunDaemon):
                 and hasattr(self._stats_processor, 'stop') is True:
             LOG.info("Stopping stats processor.")
             self._stats_processor.stop()
-        super(IsiPerfStatsDaemon, self).shutdown(signum)
+        super(IsiDataInsightsDaemon, self).shutdown(signum)
 
 
     def _query_and_process_stats(self, cur_time):

@@ -1,6 +1,6 @@
 """
-This file contains utility functions for configuring the IsiPerfStatsDaemon via
-command line args and config file.
+This file contains utility functions for configuring the IsiDataInsightsDaemon
+via command line args and config file.
 """
 import argparse
 import ConfigParser
@@ -11,18 +11,18 @@ import isi_sdk
 import sys
 import urllib3
 
-from isi_perfstats_daemon import StatsConfig, ClusterConfig
+from isi_data_insights_daemon import StatsConfig, ClusterConfig
 from isi_stats_client import IsiStatsClient
 
 
 LOG = logging.getLogger(__name__)
 
-DEFAULT_PID_FILE = "/var/run/isi_perfstatsd.pid"
-DEFAULT_LOG_FILE = "/var/log/isi_perfstatsd.log"
+DEFAULT_PID_FILE = "/var/run/isi_data_insights_d.pid"
+DEFAULT_LOG_FILE = "/var/log/isi_data_insights_d.log"
 DEFAULT_LOG_LEVEL = "INFO"
 # name of the section in the config file where the main/global settings for the
 # daemon are stored.
-MAIN_CFG_SEC = "isi_perfstatsd"
+MAIN_CFG_SEC = "isi_data_insights_d"
 # the number of seconds to wait between updates for stats that are
 # continually kept up-to-date.
 ONE_SEC = 1 # seconds
@@ -55,30 +55,44 @@ def _verify_cluster_auth_data(cluster_address):
 def _add_cluster_auth_data(cluster_address, username, password, verify_ssl):
     # update cluster auth data
     g_cluster_auth_data[cluster_address] = (username, password, verify_ssl)
-    # verify username and password
-    _verify_cluster_auth_data(cluster_address)
+    # if params are known then verify username and password
+    if username is not None \
+            and password is not None \
+            and verify_ssl is not None:
+        _verify_cluster_auth_data(cluster_address)
 
 
 def _process_config_file_clusters(clusters):
     cluster_list = []
     cluster_configs = clusters.split(" ")
     for cluster_config in cluster_configs:
-        user_pass_index = cluster_config.find("@")
-        if user_pass_index == -1:
-            cluster_list.append(cluster_config)
-            continue
-        user_index = cluster_config.rfind(":", 0, user_pass_index)
-        if user_index == -1:
-            print >> sys.stderr, "Config file contains invalid cluster "\
-                    "config: %s in %s." % (cluster_config, clusters)
-            sys.exit(1)
-        username = cluster_config[0:user_index]
-        password = cluster_config[user_index+1:user_pass_index]
-        verify_ssl_index = cluster_config.rfind(":", user_pass_index+1)
-        if verify_ssl_index != -1:
+        # expected [username:password@]address[:bool]
+        at_split = cluster_config.split("@")
+        if len(at_split) == 2:
+            user_pass_split = at_split[0].split(":", 1)
+            if len(user_pass_split) != 2:
+                print >> sys.stderr, "Config file contains invalid cluster "\
+                        "config: %s in %s (expected <username>:<password> "\
+                        "prefix)." % (cluster_config, clusters)
+                sys.exit(1)
+            username = user_pass_split[0]
+            password = user_pass_split[1]
+            # If they provide a username and password then verify_ssl defaults
+            # to false. Otherwise, unless they explicity provide it in the
+            # config, we will prompt them for that parameter when we prompt for
+            # the username and password.
+            verify_ssl = False
+        else:
+            username = None
+            password = None
+            verify_ssl = None
+        verify_ssl_split = at_split[-1].split(":", 1)
+        if len(verify_ssl_split) == 1:
+            cluster_address = verify_ssl_split[0]
+        else:
             try:
                 # try to convert to a bool
-                verify_ssl = eval(cluster_config[verify_ssl_index+1:])
+                verify_ssl = eval(verify_ssl_split[-1])
                 if type(verify_ssl) != bool:
                     raise Exception
             except Exception:
@@ -87,11 +101,7 @@ def _process_config_file_clusters(clusters):
                         "but got %s)." % (cluster_config, clusters,
                                 cluster_config[verify_ssl_index+1:])
                 sys.exit(1)
-            cluster_address = \
-                    cluster_config[user_pass_index+1:verify_ssl_index]
-        else:
-            verify_ssl = False
-            cluster_address = cluster_config[user_pass_index+1:]
+            cluster_address = verify_ssl_split[0]
         # add to cache of known cluster auth usernames and passwords
         _add_cluster_auth_data(cluster_address, username, password, verify_ssl)
         cluster_list.append(cluster_address)
@@ -101,21 +111,26 @@ def _process_config_file_clusters(clusters):
 
 def _get_cluster_auth_data(cluster):
     try:
+        username = password = verify_ssl = None
         # check if we already know the username and password
         username, password, verify_ssl = g_cluster_auth_data[cluster]
+        if username is None or password is None or verify_ssl is None:
+            # this happens when some of the auth params were provided in the
+            # config file or cli, but not all.
+            raise KeyError
     except KeyError:
         # get username and password for input clusters
-        username = raw_input("Please provide the username used to access "\
-                + cluster + " via PAPI: ")
-        password = getpass.getpass("Password: ")
-        while True:
+        if username is None:
+            username = raw_input("Please provide the username used to access "\
+                    + cluster + " via PAPI: ")
+        if password is None:
+            password = getpass.getpass("Password: ")
+        while verify_ssl is None:
             verify_ssl_resp = raw_input("Verify SSL cert [y/n]: ")
             if verify_ssl_resp == "yes" or verify_ssl_resp == "y":
                 verify_ssl = True
-                break
             elif verify_ssl_resp == "no" or verify_ssl_resp == "n":
                 verify_ssl = False
-                break
         # add to cache of known cluster auth usernames and passwords
         _add_cluster_auth_data(cluster, username, password, verify_ssl)
 
@@ -538,7 +553,8 @@ def parse_cli():
     Setup the command line args and parse them.
     """
     argparser = argparse.ArgumentParser(
-            description='Starts, stops, or restarts the isi_perfstats_daemon.')
+            description='Starts, stops, or restarts the '\
+                    'isi_data_insights_daemon.')
     argparser.add_argument('action', help="Specifies to 'start', 'stop', "
             "'restart', or 'debug' the daemon.")
     argparser.add_argument('-c', '--config-file', dest='config_file',

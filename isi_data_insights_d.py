@@ -1,11 +1,11 @@
 #!/usr/bin/python
 import sys
 
-from isi_perfstatsd_config import parse_cli, \
+from isi_data_insights_config import parse_cli, \
         configure_args_via_file, process_pid_file_arg, \
         configure_logging_via_cli, configure_via_cli, \
         configure_via_file
-from isi_perfstats_daemon import IsiPerfStatsDaemon
+from isi_data_insights_daemon import IsiDataInsightsDaemon
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     # validate the pid_file arg and get the full path to it.
     pid_file_path = process_pid_file_arg(args.pid_file)
 
-    daemon = IsiPerfStatsDaemon(pidfile=pid_file_path)
+    daemon = IsiDataInsightsDaemon(pidfile=pid_file_path)
 
     if args.action == "start" \
             or args.action == "debug" \
