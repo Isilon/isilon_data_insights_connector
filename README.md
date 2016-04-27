@@ -2,7 +2,7 @@
 The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon's Platform API (PAPI). It then has a pluggable module for processing the results of those queries. An example stat processor that sends the query results to an instance of InfluxDB is provided along with an example Grafana dashboard.
 
 # Install Dependencies Locally
-* pip install -r requirements
+* sudo pip install -r requirements.txt
 * Install Isilon SDK from github.
 
 # Install Virtual Environment
