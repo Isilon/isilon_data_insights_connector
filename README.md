@@ -25,4 +25,4 @@ The isi_data_insights_d.py script controls a daemon process that can be used to 
 * Optionally define a stop() function.
 * Put the my_plugin.py file somewhere in your PYTHONPATH.
 * Update the isi_data_insights_d.cfg file with the name of your plugin (i.e. 'my_plugin')
-* Restart the isi_data_insights_d.py daemon: ./isi_data_insights_d.py -c ./isi-data_insights_d.cfg restart
+* Restart the isi_data_insights_d.py daemon: ./isi_data_insights_d.py -c ./isi_data_insights_d.cfg restart
