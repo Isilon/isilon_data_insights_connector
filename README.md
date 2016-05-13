@@ -3,11 +3,11 @@ The isi_data_insights_d.py script controls a daemon process that can be used to 
 
 # Install Dependencies Locally
 * sudo pip install -r requirements.txt
-* Install Isilon SDK from github.
+* Install Isilon SDK Python language bindings for OneFS 8.0.X (will add support for 7.2 soon). Installation instructions: https://github.com/Isilon/isilon_sdk_8_0_python#install-the-python-language-bindings
 
 # Install Virtual Environment
 * ./setup_venv.sh
-* Install Isilon SDK from github.
+* Install Isilon SDK Python language bindings for OneFS 8.0.X (will add support for 7.2 soon). Installation instructions: https://github.com/Isilon/isilon_sdk_8_0_python#install-the-python-language-bindings
 
 # Run it
 * Install InfluxDB (i.e. sudo apt-get install influxdb).
