@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import sys
 
 from isi_data_insights_config import parse_cli, \

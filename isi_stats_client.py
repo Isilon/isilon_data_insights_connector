@@ -47,10 +47,12 @@ class IsiStatsClient(object):
         self._stats_api = isi_sdk.StatisticsApi(api_client)
 
 
-    def query(self, stats, devid="all", substr=False, timeout=60, degraded=True,
-            expand_clientid=False):
+    def query_stats(self,
+            stats, devid="all", substr=False,
+            timeout=60, degraded=True, expand_clientid=False):
         """
-        Queries the cluster for a list of stat values.
+        Queries the cluster for a list of stat values. Note: this function only
+        works on OneFS 8.0 or newer.
         :param list stats: a list of stat names to query
         :param string devid: The node number or "all" to query all nodes.
         :param bool substr: If True, makes the 'keys' arg perform a partial
@@ -103,6 +105,31 @@ class IsiStatsClient(object):
         # return the list of stats only (at this point there are no other
         # fields on the query_results data model).
         return combined_query_results.stats
+
+    def query_stat(self,
+        stat, devid="all", timeout=60, degraded=True, expand_clientid=False):
+        """
+        Queries the cluster for a single stat's value. Note: this function
+        works on OneFS 7.2 or newer clusters.
+        :param string stats: the name of the stat to query
+        :param string devid: The node number or "all" to query all nodes.
+        :param int timeout: Time in seconds to wait for results from remote
+        nodes.
+        :param bool degraded: If true, try to continue even if some stats are
+        unavailable.
+        :param bool expand_clientid: If true, use name resolution to expand
+        client addresses and other IDs.
+        :returns: an instance of isi_sdk.models.StatisticsCurrentStat
+        """
+        query_result = \
+                self._stats_api.get_statistics_current(
+                        key=stat,
+                        devid=devid,
+                        degraded=degraded,
+                        expand_clientid=expand_clientid,
+                        timeout=timeout)
+
+        return query_result.stats[0]
 
 
     def get_stats_metadata(self, stats=None):

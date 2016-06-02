@@ -37,8 +37,8 @@ MIN_UPDATE_INTERVAL_OVERRIDE_PARAM = "min_update_interval_override"
 # keep track of auth data that we have username and passwords for so that we
 # don't prompt more than once.
 g_cluster_auth_data = {}
-# keep track of the name of each cluster
-g_cluster_names = {}
+# keep track of the name and version of each cluster
+g_cluster_names_and_versions = {}
 
 
 def _verify_cluster_auth_data(cluster_address):
@@ -136,15 +136,18 @@ def _get_cluster_auth_data(cluster):
 
     return username, password, verify_ssl
 
-
-def _query_cluster_name(cluster_address, username, password, verify_ssl):
+def _build_api_client(cluster_address, username, password, verify_ssl):
     isi_sdk.configuration.username = username
     isi_sdk.configuration.password = password
     isi_sdk.configuration.verify_ssl = verify_ssl
     if verify_ssl is False:
         urllib3.disable_warnings()
     url = "https://" + cluster_address + ":8080"
-    api_client = isi_sdk.ApiClient(url)
+    return isi_sdk.ApiClient(url)
+
+def _query_cluster_name(cluster_address, username, password, verify_ssl):
+    api_client = \
+            _build_api_client(cluster_address, username, password, verify_ssl)
     # get the Cluster API
     cluster_api = isi_sdk.ClusterApi(api_client)
     try:
@@ -155,22 +158,60 @@ def _query_cluster_name(cluster_address, username, password, verify_ssl):
         return cluster_address
 
 
+def _query_cluster_version(cluster_address, username, password, verify_ssl):
+    api_client = \
+            _build_api_client(cluster_address, username, password, verify_ssl)
+    url = "https://" + cluster_address + ":8080"
+    # get the Cluster API
+    cluster_api = isi_sdk.ClusterApi(api_client)
+    version = 8.0
+    # figure out which python sdk is installed - get_cluster_version was
+    # added for 8.0, so only works on 8.0 clusters, so try to use that if
+    # it is available, but if the cluster is not 8.0 then
+    # get_cluster_version will throw an exception, which then we'll have to
+    # assume it is a 7.2 cluster.
+    if hasattr(cluster_api, "get_cluster_version"):
+        node_versions = None
+        try:
+            version_resp = cluster_api.get_cluster_version()
+            node_versions = version_resp.nodes
+            # if any nodes are less than 8.0 then use that
+            for node in version_resp.nodes:
+                if node.release.startswith('v'):
+                    node_version = float(node.release[1:4])
+                    if node_version < version:
+                        version = node_version
+                        break
+        except isi_sdk.rest.ApiException as exc:
+            LOG.warning("Unable to determine version for cluster %s. " \
+                    "Exception: %s." % (cluster_address, str(exc)))
+            version = 7.2
+    else:
+        # if the 7.2 sdk is installed then even if the cluster is an 8.0
+        # cluster it still must be treated like a 7.2 cluster.
+        version = 7.2
+
+    return version
+
+
 def _build_cluster_configs(cluster_list):
     cluster_configs = []
     for cluster in cluster_list:
         username, password, verify_ssl = _get_cluster_auth_data(cluster)
 
-        if cluster in g_cluster_names:
-            cluster_name = g_cluster_names[cluster]
+        if cluster in g_cluster_names_and_versions:
+            cluster_name, version = g_cluster_names_and_versions[cluster]
         else:
             cluster_name = \
                     _query_cluster_name(
                             cluster, username, password, verify_ssl)
-            g_cluster_names[cluster] = cluster_name
+            version = _query_cluster_version(
+                            cluster, username, password, verify_ssl)
+            g_cluster_names_and_versions[cluster] = cluster_name, version
 
         cluster_config = \
-                ClusterConfig(cluster, username, password, cluster_name,
-                        verify_ssl)
+                ClusterConfig(cluster, username, password, version,
+                        cluster_name, verify_ssl)
         cluster_configs.append(cluster_config)
 
     return cluster_configs
