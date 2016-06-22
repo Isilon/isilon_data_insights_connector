@@ -7,12 +7,12 @@ import ConfigParser
 import getpass
 import logging
 import os
-import isi_sdk
 import sys
 import urllib3
 
 from isi_data_insights_daemon import StatsConfig, ClusterConfig
 from isi_stats_client import IsiStatsClient
+import isi_sdk_utils
 
 
 LOG = logging.getLogger(__name__)
@@ -38,28 +38,12 @@ MIN_UPDATE_INTERVAL_OVERRIDE_PARAM = "min_update_interval_override"
 # don't prompt more than once.
 g_cluster_auth_data = {}
 # keep track of the name and version of each cluster
-g_cluster_names_and_versions = {}
-
-
-def _verify_cluster_auth_data(cluster_address):
-    # HACK: verify auth credentials by doing a query for "cluster.health"
-    # stats key.
-    try:
-        _query_stats_metadata(cluster_address, ["cluster.health"])
-    except isi_sdk.rest.ApiException as exc:
-        print >> sys.stderr, "Invalid auth credentials for cluster: %s.\n"\
-                "ERROR:\n%s." % (cluster_address, str(exc))
-        sys.exit(1)
+g_cluster_configs = {}
 
 
 def _add_cluster_auth_data(cluster_address, username, password, verify_ssl):
     # update cluster auth data
     g_cluster_auth_data[cluster_address] = (username, password, verify_ssl)
-    # if params are known then verify username and password
-    if username is not None \
-            and password is not None \
-            and verify_ssl is not None:
-        _verify_cluster_auth_data(cluster_address)
 
 
 def _process_config_file_clusters(clusters):
@@ -136,18 +120,8 @@ def _get_cluster_auth_data(cluster):
 
     return username, password, verify_ssl
 
-def _build_api_client(cluster_address, username, password, verify_ssl):
-    isi_sdk.configuration.username = username
-    isi_sdk.configuration.password = password
-    isi_sdk.configuration.verify_ssl = verify_ssl
-    if verify_ssl is False:
-        urllib3.disable_warnings()
-    url = "https://" + cluster_address + ":8080"
-    return isi_sdk.ApiClient(url)
 
-def _query_cluster_name(cluster_address, username, password, verify_ssl):
-    api_client = \
-            _build_api_client(cluster_address, username, password, verify_ssl)
+def _query_cluster_name(cluster_address, isi_sdk, api_client):
     # get the Cluster API
     cluster_api = isi_sdk.ClusterApi(api_client)
     try:
@@ -158,71 +132,45 @@ def _query_cluster_name(cluster_address, username, password, verify_ssl):
         return cluster_address
 
 
-def _query_cluster_version(cluster_address, username, password, verify_ssl):
-    api_client = \
-            _build_api_client(cluster_address, username, password, verify_ssl)
-    url = "https://" + cluster_address + ":8080"
-    # get the Cluster API
-    cluster_api = isi_sdk.ClusterApi(api_client)
-    version = 8.0
-    # figure out which python sdk is installed - get_cluster_version was
-    # added for 8.0, so only works on 8.0 clusters, so try to use that if
-    # it is available, but if the cluster is not 8.0 then
-    # get_cluster_version will throw an exception, which then we'll have to
-    # assume it is a 7.2 cluster.
-    if hasattr(cluster_api, "get_cluster_version"):
-        node_versions = None
-        try:
-            version_resp = cluster_api.get_cluster_version()
-            node_versions = version_resp.nodes
-            # if any nodes are less than 8.0 then use that
-            for node in version_resp.nodes:
-                if node.release.startswith('v'):
-                    node_version = float(node.release[1:4])
-                    if node_version < version:
-                        version = node_version
-                        break
-        except isi_sdk.rest.ApiException as exc:
-            LOG.warning("Unable to determine version for cluster %s. " \
-                    "Exception: %s." % (cluster_address, str(exc)))
-            version = 7.2
-    else:
-        # if the 7.2 sdk is installed then even if the cluster is an 8.0
-        # cluster it still must be treated like a 7.2 cluster.
-        version = 7.2
-
-    return version
-
-
 def _build_cluster_configs(cluster_list):
     cluster_configs = []
     for cluster in cluster_list:
         username, password, verify_ssl = _get_cluster_auth_data(cluster)
 
-        if cluster in g_cluster_names_and_versions:
-            cluster_name, version = g_cluster_names_and_versions[cluster]
+        if cluster in g_cluster_configs:
+            cluster_name, isi_sdk, api_client, version = \
+                    g_cluster_configs[cluster]
         else:
+            if verify_ssl is False:
+                urllib3.disable_warnings()
+            try:
+                isi_sdk, api_client, version = \
+                        isi_sdk_utils.configure(
+                                cluster, username, password, verify_ssl)
+            except RuntimeError as exc:
+                print >> sys.stderr, "Failed to configure SDK for " \
+                        "cluster %s. Exception raised: %s" \
+                        % (cluster, str(exc))
+                sys.exit(1)
+
             cluster_name = \
-                    _query_cluster_name(
-                            cluster, username, password, verify_ssl)
-            version = _query_cluster_version(
-                            cluster, username, password, verify_ssl)
-            g_cluster_names_and_versions[cluster] = cluster_name, version
+                    _query_cluster_name(cluster, isi_sdk, api_client)
+            g_cluster_configs[cluster] = \
+                    cluster_name, isi_sdk, api_client, version
 
         cluster_config = \
-                ClusterConfig(cluster, username, password, version,
-                        cluster_name, verify_ssl)
+                ClusterConfig(
+                        cluster, cluster_name, version, isi_sdk, api_client)
         cluster_configs.append(cluster_config)
 
     return cluster_configs
 
 
 def _configure_stat_group(daemon,
-        update_interval, cluster_list, stats_list):
+        update_interval, cluster_configs, stats_list):
     """
     Configure the daemon with some StatsConfigs.
     """
-    cluster_configs = _build_cluster_configs(cluster_list)
     # configure daemon with stats
     if update_interval < MIN_UPDATE_INTERVAL:
         LOG.warning("The following stats are set to be queried at a faster "\
@@ -243,17 +191,16 @@ def _query_stats_metadata(cluster, stat_names):
     Query the specified cluster for the metadata of the stats specified in
     stat_names list.
     """
-    username, password, verify_ssl = _get_cluster_auth_data(cluster)
-    isi_stats_client = \
-            IsiStatsClient(cluster, username, password, verify_ssl)
+    stats_api = cluster.isi_sdk.StatisticsApi(cluster.api_client)
+    isi_stats_client = IsiStatsClient(stats_api)
     return isi_stats_client.get_stats_metadata(stat_names)
 
 
 def _compute_stat_group_update_intervals(update_interval_multiplier,
-        cluster_list, stat_names, update_intervals):
+        cluster_configs, stat_names, update_intervals):
     # update interval is supposed to be set relative to the collection
     # interval, which might be different for each stat and each cluster.
-    for cluster in cluster_list:
+    for cluster in cluster_configs:
         stats_metadata = _query_stats_metadata(cluster, stat_names)
         for stat_metadata in stats_metadata:
             # cache time is the length of time the system will store the
@@ -311,6 +258,8 @@ def _configure_stat_groups_via_file(daemon,
                 % (stat_group)
         sys.exit(1)
 
+    cluster_configs = _build_cluster_configs(cluster_list)
+
     update_interval_param = config_file.get(stat_group, "update_interval")
     stat_names = config_file.get(stat_group, "stats").split()
     # remove duplicates
@@ -322,11 +271,12 @@ def _configure_stat_groups_via_file(daemon,
             update_interval_multiplier = 1 if update_interval_param == "*" \
                     else int(update_interval_param[1:])
         except ValueError as exc:
-            print >> sys.stderr, "Failed to parse update interval from %s "\
-                    "stat group.\nERROR: %s" % (stat_group, str(exc))
+            print >> sys.stderr, "Failed to parse update interval multiplier "\
+                    "from %s stat group.\nERROR: %s" % (stat_group, str(exc))
             sys.exit(1)
+        print "Computing update intervals for stat group: %s." % stat_group
         _compute_stat_group_update_intervals(
-                update_interval_multiplier, cluster_list, stat_names,
+                update_interval_multiplier, cluster_configs, stat_names,
                 update_intervals)
     else:
         try:
@@ -336,7 +286,7 @@ def _configure_stat_groups_via_file(daemon,
                     "stat group.\nERROR: %s" % (stat_group, str(exc))
             sys.exit(1)
         update_intervals[update_interval] = \
-                (cluster_list, stat_names)
+                (cluster_configs, stat_names)
 
     for update_interval, clusters_stats_tuple in update_intervals.iteritems():
         # first item in clusters_stats_tuple is the unique list of clusters
@@ -370,6 +320,7 @@ def _configure_stat_groups_via_cli(daemon, args):
 
     # remove duplicates
     cluster_list = list(set(cluster_list))
+    cluster_configs = _build_cluster_configs(cluster_list)
 
     for index in range(0, len(args.stat_groups)):
         stats_list = args.stat_groups[index].split(",")
@@ -380,7 +331,7 @@ def _configure_stat_groups_via_cli(daemon, args):
             sys.exit(1)
         update_interval = args.update_intervals[index]
         _configure_stat_group(daemon,
-                update_interval, cluster_list, stats_list)
+                update_interval, cluster_configs, stats_list)
 
 
 def _configure_stats_processor(daemon, stats_processor, processor_args):
