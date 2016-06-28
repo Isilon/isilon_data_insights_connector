@@ -11,16 +11,12 @@ LOG = logging.getLogger(__name__)
 
 class ClusterConfig(object):
     def __init__(self,
-            address, username, password, version, name=None, verify_ssl=False):
+            address, name, version, isi_sdk, api_client):
         self.address = address
-        self.username = username
-        self.password = password
+        self.name = name
         self.version = version
-        if name is None:
-            self.name = address
-        else:
-            self.name = name
-        self.verify_ssl = verify_ssl
+        self.isi_sdk = isi_sdk
+        self.api_client = api_client
 
 
     def __eq__(self, other):
@@ -207,14 +203,11 @@ class IsiDataInsightsDaemon(run.RunDaemon):
 
         # now we have a unique list of clusters to query, so query them
         for cluster, stats in cluster_stats.iteritems():
-            LOG.debug("Querying cluster %s.", cluster.name)
+            LOG.debug("Querying cluster %s %f", cluster.name, cluster.version)
             LOG.debug("Querying stats %d.", len(stats))
             stats_client = \
                     IsiStatsClient(
-                            cluster.address,
-                            cluster.username,
-                            cluster.password,
-                            cluster.verify_ssl)
+                            cluster.isi_sdk.StatisticsApi(cluster.api_client))
             # query the current cluster with the current set of stats
             try:
                 if cluster.version >= 8.0:
@@ -225,7 +218,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                         result = stats_client.query_stat(stat)
                         results.append(result)
 
-            except Exception as exc:
+            except cluster.isi_sdk.rest.ApiException as exc:
                 LOG.error("Failed to query stats from cluster %s, exception "\
                           "raised: %s", cluster.name, str(exc))
                 continue

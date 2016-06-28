@@ -1,5 +1,4 @@
 import logging
-import isi_sdk
 import urllib3
 
 
@@ -20,31 +19,14 @@ class IsiStatsClient(object):
     Handles the details of querying for Isilon cluster statistics values and
     metadata using the Isilon SDK.
     """
-    def __init__(self,
-            cluster_address,
-            username, password, verify_ssl=False):
+    def __init__(self, stats_api):
         """
         Setup the Isilon SDK to query the specified cluster's statistics.
-        :param string cluster_address: the ip-address of a node in the Isilon
-        cluster or smart-connect name of the cluster.
-        :param string username: the authentication username for the Isilon
-        cluster.
-        :param string password: the authentication password for the Isilon
-        cluster.
-        :param bool verify_ssl: specifies whether to verify the Isilon
-        cluster's SSL certificate.
+        :param StatisticsApi stats_api: instance of StatisticsApi from the
+        isi_sdk_8_0 or isi_sdk_7_2 package.
         """
-        # configure username and password
-        isi_sdk.configuration.username = username
-        isi_sdk.configuration.password = password
-        isi_sdk.configuration.verify_ssl = verify_ssl
-        if verify_ssl is False:
-            urllib3.disable_warnings()
-        # configure PAPI url
-        url = "https://" + cluster_address + ":8080"
-        api_client = isi_sdk.ApiClient(url)
         # get the Statistics API
-        self._stats_api = isi_sdk.StatisticsApi(api_client)
+        self._stats_api = stats_api
 
 
     def query_stats(self,

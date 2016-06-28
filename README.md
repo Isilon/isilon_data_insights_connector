@@ -3,39 +3,29 @@ The isi_data_insights_d.py script controls a daemon process that can be used to 
 
 # Install Dependencies Locally
 * sudo pip install -r requirements.txt
-* Install Isilon SDK Python language bindings for OneFS 8.0.X or 7.2.X (see SDK version help below).
-* Instructions for 8.0 SDK: https://github.com/Isilon/isilon_sdk_8_0_python#requirements
-* Instructions for 7.2 SDK: https://github.com/Isilon/isilon_sdk_7_2_python/#requirements.
+* Install Isilon SDK Python language bindings for OneFS 8.0.X and/or 7.2.X (see SDK version help below).
+* Instructions for SDK installation: https://github.com/Isilon/isilon_sdk
 
 # Install Virtual Environment
-* To install the connector with the 8.0 SDK run (see SDK version help below):
+* To install the connector in a virtual environment run:
 ```sh
-./setup_venv.sh 8
-```
-* To install the connector with the 7.2 SDK run (see SDK version help below):
-```sh
-./setup_venv.sh 7
+./setup_venv.sh
 ```
 
 # Isilon SDK Python Bindings Version Help
-* If you intend to monitor both 8.0 and 7.2 clusters with a single instance of the Isilon Data Insights Connector then you can install either the 8.0 SDK or the 7.2 SDK, but the 8.0 SDK is preferable because it is able to query multiple statistics more efficiently.
-* However, before you decide, note that while the Connector's use of the 8.0 Python SDK is compatible with 7.2 clusters, the 8.0 SDK is not completely compatible with 7.2 clusters in general. So if you intend to use the SDK for other purposes, you may be better off doing two "Virtual Environment" installs, one with the 8.0 SDK installed and the other with the 7.2 SDK installed. Then each instance of the Connector can send statistics data to a single instance of InfluxDB. Doing this will still allow you to monitor multiple clusters via a single Grafana dashboard.
-* If you intend to monitor only a single cluster or if all your clusters are either 8.0 or 7.2 then install the version of the SDK that matches the version of the clusters you intend to monitor.
+* If you intend to monitor both 8.0 and 7.2 clusters with a single instance of the Isilon Data Insights Connector then you should install both the 8.0 SDK and the 7.2 SDK. However, it should be noted that the 7.2 version of the SDK will work with 8.0 clusters, but not as efficiently (at least in the case of the StatisticsApi), so it is possible, but not recommended, to use the Connector with 8.0 clusters and the 7.2 SDK.
+* If you intend to monitor only a single cluster or if all your clusters are either 8.0 or 7.2 then you should install the version of the SDK that matches the version of the clusters you intend to monitor.
 
 # Run it
-* Modify the provided configuration file (isi_data_insights_d.cfg) so that it points at the set of Isilon OneFS clusters that you want to query. If you are running multiple instances of the Connector via "Virtual Environment" then you will probably want to create a separate config file for each.
-* The default configuration file is setup to send the stats data to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB, which you can do locally or remotely.
+* Modify the provided configuration file (isi_data_insights_d.cfg) so that it points at the set of Isilon OneFS clusters that you want to query.
+* The default configuration file is setup to send the stats data to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB. InfluxDB can be installed locally (i.e on the same system as the Connector) or remotely (i.e. on a different system).
 ```sh
-sudo apt-get install influxdb).
+sudo apt-get install influxdb
 ```
 * If you installed InfluxDB to somewhere other than localhost and/or port 8086 then you'll also need to update the example configuration file with the address and port of the InfluxDB.
 * If you did a "Virtual Environment" install then be sure to activate the venv by running:
 ```sh
-. .venv8/bin/activate
-```
-or if you installed the 7.2 SDK run:
-```sh
-. .venv7/bin/activate
+. .venv/bin/activate
 ```
 * Run it:
 ```sh
