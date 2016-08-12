@@ -124,7 +124,7 @@ class IsiStatsClient(object):
         """
         if stats is not None and len(stats) < MAX_DIRECT_METADATA_STATS:
             return self._get_metadata_direct(stats)
-        return self._get_metadata_indirect(stats, num_stats)
+        return self._get_metadata_indirect(stats)
 
 
     def get_stat_metadata(self, stat):
@@ -151,7 +151,7 @@ class IsiStatsClient(object):
         if stats is not None:
             num_stats = len(stats)
             for stat_index in range(0, num_stats):
-                stat_map[stat] = stat_index
+                stat_map[stats[stat_index]] = stat_index
             result_list = [None] * num_stats
         else:
             result_list = []

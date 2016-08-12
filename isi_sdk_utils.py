@@ -46,66 +46,71 @@ def configure(
     of the SDK.
     :returns: tuple
     """
+    if isi_sdk_7_2 is None and isi_sdk_8_0 is None:
+        raise RuntimeError("Isilon SDK is not installed.")
+
     host_url = "https://" + host + ":8080"
 
     if use_version is None or use_version is "detect":
-        use_version = \
+        host_version = \
                 _detect_host_version(host_url, username, password, verify_ssl)
+    else:
+        host_version = use_version
 
     isi_sdk = None
     api_client_class = None
-    if use_version < 8.0:
-        if isi_sdk_7_2 is None:
-            raise RuntimeError("Needed version (7.2) of the Isilon SDK is not" \
-                    "installed.")
+    if host_version < 8.0 and isi_sdk_7_2 is not None:
         isi_sdk = isi_sdk_7_2
         api_client_class = IsiApiClient_7_2
+    elif host_version >= 8.0 and isi_sdk_8_0 is None:
+        isi_sdk = isi_sdk_7_2
+        api_client_class = IsiApiClient_7_2
+        # we detected a version 8.0 host, but have to treat it like a 7.2 host
+        # because the 8.0 SDK is not installed
+        host_version = 7.2
     else:
-        if isi_sdk_8_0 is None:
-            raise RuntimeError("Needed version (8.0) of the Isilon SDK is not" \
-                    "installed.")
         isi_sdk = isi_sdk_8_0
         api_client_class = IsiApiClient_8_0
-
 
     api_client = api_client_class(host_url, verify_ssl)
     api_client.configure_basic_auth(username, password)
 
-    return isi_sdk, api_client, use_version
+    return isi_sdk, api_client, host_version
 
 
 def _detect_host_version(host, username, password, verify_ssl):
     # if 7.2 is available then use it to check the version of the cluster
     # because it will work for 7.2 or newer clusters.
     isi_sdk, api_client_class = (isi_sdk_7_2, IsiApiClient_7_2) \
-            if isi_sdk_7_2 else ((isi_sdk_8_0, IsiApiClient_8_0) \
-                if isi_sdk_8_0 else (None, None))
-
-    if isi_sdk is None:
-        raise RuntimeError("The Isilon SDK is not installed.")
+            if isi_sdk_7_2 else (isi_sdk_8_0, IsiApiClient_8_0)
 
     api_client = api_client_class(host, verify_ssl)
     api_client.configure_basic_auth(username, password)
 
     try:
-        config = isi_sdk.ClusterApi(api_client).get_cluster_config()
-    except isi_sdk.rest.ApiException as exc:
-        raise RuntimeError("Failed to get cluster config: %s" % str(exc))
+        try:
+            config = isi_sdk.ClusterApi(api_client).get_cluster_config()
+            host_version = 7.2 if config.onefs_version.release.startswith("v7.") \
+                    else 8.0
+        except isi_sdk.rest.ApiException as api_exc:
+            # if we are using isi_sdk_8_0 (because 7.2 is not installed) and the
+            # cluster is a 7.2 cluster then it will return 404 for the
+            # get_cluster_config call, but it should still work for stats queries,
+            # so just set the version and continue on.
+            if isi_sdk == isi_sdk_8_0 and api_exc.status == 404:
+                host_version = 7.2
+            else:
+                raise api_exc
+    except Exception as exc:
+        raise RuntimeError("Failed to get cluster config for cluster %s " \
+                "using SDK %s. Error: %s" % (host, isi_sdk.__name__, str(exc)))
 
-    host_version = 7.2 if config.onefs_version.release.startswith("v7.") \
-            else 8.0
+    if host_version == 7.2 and isi_sdk_7_2 is None:
+        print >> sys.stderr, "Detected version 7 host, but version 7.2 SDK " \
+                "is not installed, will use 8.0 SDK instead."
 
-    if host_version == 7.2:
-        if isi_sdk_7_2:
-            return 7.2
-        print >> sys.stderr, "Detected version 7 host, but version 7.2 SDK" \
-                "is not installed, will use 8.0 instead."
+    if host_version == 8.0 and isi_sdk_8_0 is None:
+        print >> sys.stderr, "Detected version 8 host, but version 8.0 SDK " \
+                "is not installed, will use 7.2 SDK instead."
 
-    if isi_sdk_8_0:
-        return 8.0
-
-    if host_version == 8.0:
-        print >> sys.stderr, "Detected version 8 host, but version 8.0 SDK" \
-                "is not installed, will use 7.2 instead."
-
-    return 7.2
+    return host_version

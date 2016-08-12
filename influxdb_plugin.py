@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 MAX_POINTS_PER_WRITE = 100
 # separator used to concatenate stat keys with sub-keys derived from stats
 # whose value is a dict or list.
-SUB_KEY_SEPARATOR = "_"
+SUB_KEY_SEPARATOR = "."
 
 
 def start(argv):
@@ -76,6 +76,7 @@ def process(cluster, stats):
     LOG.debug("Processing stats %d.", len(stats))
     tags = {"cluster": cluster}
     influxdb_points = []
+    num_points = 0
     points_written = 0
     for stat in stats:
         if stat.devid != 0:
@@ -101,11 +102,16 @@ def process(cluster, stats):
             # if it doesn't convert to a different type then it is a string
             # value, which does not really make sense for InfluxDB, but oh well.
             pass
-        _process_stat(stat.key, stat.time, stat.value, tags, influxdb_points)
-        num_points = len(influxdb_points)
+        influxdb_point = \
+                _influxdb_point_from_stat(
+                        stat.time, tags, stat.key, stat.value)
+        if influxdb_point is not None and len(influxdb_point["fields"]) > 0:
+            influxdb_points.append(influxdb_point)
+            num_points += 1
         if num_points > MAX_POINTS_PER_WRITE:
             points_written += _write_points(influxdb_points, num_points)
             influxdb_points = []
+            num_points = 0
     # send left over points to influxdb
     num_points = len(influxdb_points)
     if num_points > 0:
@@ -113,64 +119,85 @@ def process(cluster, stats):
     LOG.debug("Done processing stats, wrote %d points.", points_written)
 
 
-def _process_stat_dict(stat_key, stat_time, stat_value, tags, influxdb_points):
+def _add_field(fields, field_name, field_value, field_value_type):
+    if field_value_type == long or field_value_type == int:
+        # convert integers to float because InfluxDB only supports 64 bit
+        # signed integers, so doing this prevents an "out of range" error when
+        # inserting values that are unsigned 64 bit integers.
+        # Note that it is not clear if the PAPI is smart enough to always
+        # encode 64 bit unsigned integers as type 'long' even when the actual
+        # value is fits into a 64 bit signed integer and because InfluxDB
+        # wants a measurement to always be of the same type, the safest thing
+        # to do is convert integers to float.
+        field_value = float(field_value)
+    fields.append((field_name, field_value))
+
+
+def _process_stat_dict(stat_value, fields, tags, prefix=""):
     """
-    For each item in the dictionary create a separate measurement point for
-    influxdb by concatenating the stat's key with the stat's key in the value
-    dictionary.
-    Append each point to the influxdb_points list.
+    Add (field_name, field_value) tuples to the fields list for any
+    non-string or non-"id" items in the stat_value dict so that they can be
+    used for the "fields" parameter of the InfluxDB point.
+    Any string or keys with "id" on the end of their name get turned into tags.
     """
-    # make a copy of the tags so that any string values in the dict can be
-    # added as tags of the non-string values of this dict and any "id" keys
-    # can be added as tags as well.
-    dict_tags = tags.copy()
-    for sub_key, value in stat_value.iteritems():
-        stat_name = stat_key + SUB_KEY_SEPARATOR + sub_key
-        if (type(value) == str or type(value) == unicode) \
-                or (sub_key[-2:] == "id" and type(value) == int):
-            dict_tags[sub_key] = value
+    for key, value in stat_value.iteritems():
+        value_type = type(value)
+        field_name = prefix + key
+        if (value_type == str or value_type == unicode) \
+                or (key[-2:] == "id" and value_type == int):
+            tags[field_name] = value
+        elif value_type == list:
+            list_prefix = field_name + SUB_KEY_SEPARATOR
+            _process_stat_list(value, fields, tags, list_prefix)
+        elif value_type == dict:
+            dict_prefix = field_name + SUB_KEY_SEPARATOR
+            _process_stat_dict(value, fields, tags, dict_prefix)
         else:
-            _process_stat(stat_name, stat_time, value, dict_tags,
-                    influxdb_points)
+            _add_field(fields, field_name, value, value_type)
 
 
-def _process_stat_list(stat_key, stat_time, stat_value, tags, influxdb_points):
+def _process_stat_list(stat_value, fields, tags, prefix=""):
     """
-    For each item in the dictionary create a separate measurement point for
-    influxdb by concatenating the stat's key with index in the value list.
-    Append each point to the influxdb_points list.
+    Add (field_name, field_value) tuples to the fields list for any
+    non-string or non-"id" items in the stat_value dict so that they can be
+    used for the "fields" parameter of the InfluxDB point.
     """
+    field_name = prefix + "value"
     for index in range(0, len(stat_value)):
         list_value = stat_value[index]
-        if type(list_value) != dict:
-            # if it is not a dict then give it a unique name based on the index
-            stat_name = stat_key + SUB_KEY_SEPARATOR + str(index)
-            _process_stat(stat_name, stat_time, list_value, tags,
-                    influxdb_points)
+        value_type = type(list_value)
+        if value_type == dict:
+            _process_stat_dict(list_value, fields, tags, prefix)
         else:
-            # if it is a dict then the dict's keys will determine the names
-            _process_stat_dict(stat_key, stat_time, list_value, tags,
-                    influxdb_points)
+            item_name = field_name + SUB_KEY_SEPARATOR + str(index)
+            if value_type == list:
+                # AFAIK there are no instances of a list that contains a list
+                # but just in case one is added in the future, deal with it.
+                item_name += SUB_KEY_SEPARATOR
+                _process_stat_list(list_value, fields, tags, item_name)
+            else:
+                _add_field(fields, item_name, list_value, value_type)
 
 
-def _process_stat(stat_key, stat_time, stat_value, tags, influxdb_points):
+def _influxdb_point_from_stat(stat_time, tags, stat_key, stat_value):
     """
     Create InfluxDB points/measurements from the stat query result.
     """
-    if type(stat_value) == dict:
-        _process_stat_dict(stat_key, stat_time, stat_value, tags,
-                influxdb_points)
-    elif type(stat_value) == list:
-        _process_stat_list(stat_key, stat_time, stat_value, tags,
-                influxdb_points)
+    point_tags = tags.copy()
+    fields = []
+    stat_value_type = type(stat_value)
+    if stat_value_type == dict:
+        _process_stat_dict(stat_value, fields, point_tags)
+    elif stat_value_type == list:
+        _process_stat_list(stat_value, fields, point_tags)
     else:
         if stat_value == "":
-            return # InfluxDB does not like empty string stats
-        point = _build_influxdb_point(stat_time, stat_key, stat_value, tags)
-        influxdb_points.append(point)
+            return None # InfluxDB does not like empty string stats
+        _add_field(fields, "value", stat_value, stat_value_type)
+    return _build_influxdb_point(stat_time, point_tags, stat_key, fields)
 
 
-def _build_influxdb_point(unix_ts_secs, measurement, value, tags):
+def _build_influxdb_point(unix_ts_secs, tags, measurement, fields):
     """
     Build the json for an InfluxDB data point.
     """
@@ -179,7 +206,11 @@ def _build_influxdb_point(unix_ts_secs, measurement, value, tags):
             "measurement": measurement,
             "tags": tags,
             "time": timestamp_ns,
-            "fields": {"value": value}}
+            "fields": {}}
+
+    for field_name, field_value in fields:
+        point_json["fields"][field_name] = field_value
+
     return point_json
 
 
