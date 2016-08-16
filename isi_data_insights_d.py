@@ -16,9 +16,17 @@ def main():
     config_file = configure_args_via_file(args)
 
     # validate the pid_file arg and get the full path to it.
-    pid_file_path = process_pid_file_arg(args.pid_file)
+    pid_file_path = process_pid_file_arg(args.pid_file, args.action)
 
     daemon = IsiDataInsightsDaemon(pidfile=pid_file_path)
+
+    # before we do the long process of configuring, lets make sure we have
+    # a valid pid to do a stop or restart with
+    if (args.action == "restart" or args.action == "stop") \
+            and daemon.pid is None:
+        print >> sys.stderr, "Cannot " + args.action + " daemon, " \
+                "invalid pid in file: " + str(pid_file_path)
+        sys.exit(1)
 
     if args.action == "start" \
             or args.action == "debug" \
@@ -33,10 +41,12 @@ def main():
         if args.action == "start":
             daemon.start()
         elif args.action == "restart":
+            print "Restarting daemon with pid " + str(daemon.pid)
             daemon.restart()
         else:
             daemon.run()
     elif args.action == "stop":
+        print "Stopping daemon with pid " + str(daemon.pid)
         daemon.stop()
     else:
         print >> sys.stderr, "Invalid action arg: '%s', must be one of "\

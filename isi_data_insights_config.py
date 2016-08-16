@@ -17,8 +17,8 @@ import isi_sdk_utils
 
 LOG = logging.getLogger(__name__)
 
-DEFAULT_PID_FILE = "/var/run/isi_data_insights_d.pid"
-DEFAULT_LOG_FILE = "/var/log/isi_data_insights_d.log"
+DEFAULT_PID_FILE = "./isi_data_insights_d.pid"
+DEFAULT_LOG_FILE = "./isi_data_insights_d.log"
 DEFAULT_LOG_LEVEL = "INFO"
 # name of the section in the config file where the main/global settings for the
 # daemon are stored.
@@ -48,7 +48,7 @@ def _add_cluster_auth_data(cluster_address, username, password, verify_ssl):
 
 def _process_config_file_clusters(clusters):
     cluster_list = []
-    cluster_configs = clusters.split(" ")
+    cluster_configs = clusters.split()
     for cluster_config in cluster_configs:
         # expected [username:password@]address[:bool]
         at_split = cluster_config.split("@")
@@ -152,7 +152,8 @@ def _build_cluster_configs(cluster_list):
                         "cluster %s. Exception raised: %s" \
                         % (cluster, str(exc))
                 sys.exit(1)
-
+            print "Configured %s as version %d cluster, using SDK %s." \
+                    % (cluster, int(version), isi_sdk.__name__)
             cluster_name = \
                     _query_cluster_name(cluster, isi_sdk, api_client)
             g_cluster_configs[cluster] = \
@@ -256,6 +257,9 @@ def _configure_stat_groups_via_file(daemon,
     if len(cluster_list) == 0:
         print >> sys.stderr, "The %s stat group has no clusters to query."\
                 % (stat_group)
+        print >> sys.stderr, "You must provide either a global list of " \
+                "clusters to query for all stat groups, or a per-stat-" \
+                "group list of clusters, or both."
         sys.exit(1)
 
     cluster_configs = _build_cluster_configs(cluster_list)
@@ -300,6 +304,11 @@ def _configure_stat_groups_via_file(daemon,
 
 
 def _configure_stat_groups_via_cli(daemon, args):
+    if len(args.stat_groups) == 0:
+        print >> sys.stderr, "You must provide a set of stats to query via " \
+            "the --stats command line argument or a configuration file."
+        sys.exit(1)
+
     if not args.update_intervals:
         # for some reason if i try to use default=[MIN_UPDATE_INTERVAL] in the
         # argparser for the update_intervals arg then my list always has a
@@ -522,7 +531,7 @@ def configure_args_via_file(args):
     return config_file
 
 
-def process_pid_file_arg(pid_file):
+def process_pid_file_arg(pid_file, action):
     """
     Make sure the pid_file argument is a valid path. Set it to the default if
     it was not specified.
@@ -533,11 +542,17 @@ def process_pid_file_arg(pid_file):
     parent_dir = os.path.dirname(pid_file)
     if parent_dir \
             and os.path.exists(parent_dir) is False:
-        print >> sys.stderr, "Invalid pid file path: %s." \
-                % (pid_file)
+        print >> sys.stderr, "Invalid pid file path: %s." % pid_file
         sys.exit(1)
 
-    return os.path.abspath(pid_file)
+    pid_file_path = os.path.abspath(pid_file)
+    if (action == "stop" or action == "restart") \
+            and os.path.exists(pid_file_path) is False:
+        print >> sys.stderr, "Invalid pid file path: %s." % pid_file
+        sys.exit(1)
+
+    return pid_file_path
+
 
 
 def parse_cli():
@@ -550,20 +565,23 @@ def parse_cli():
     argparser.add_argument('action', help="Specifies to 'start', 'stop', "
             "'restart', or 'debug' the daemon.")
     argparser.add_argument('-c', '--config-file', dest='config_file',
-            help="Set the path to the config file.",
-            action='store', default=None)
+            help="Set the path to the config file. The default value is "
+            "'./isi_data_insights_d.cfg'.",
+            action='store', default="./isi_data_insights_d.cfg")
     argparser.add_argument('-a', '--processor-args', dest='processor_args',
             help="Specifies the args to pass to the start function of the "
             "results processor's start function.",
             action="store", default="")
     argparser.add_argument('-l', '--log-file', dest='log_file',
-            help="Set the path to the log file.",
+            help="Set the path to the log file. The default value is "
+            "'./isi_data_insights_d.log'.",
             action='store', default=None)
     argparser.add_argument('-e', '--log-level', dest='log_level',
             help="Set the logging level (debug, info, warning, error, or "
             "critical).", action='store', default=None)
     argparser.add_argument('-p', '--pid-file', dest='pid_file',
-            help="Set the path to the daemon pid file.",
+            help="Set the path to the daemon pid file. The default value is "
+            "'./isi_data_insights_d.pid'.",
             action='store', default=None)
     argparser.add_argument('-x', '--stats-processor', dest='stats_processor',
             help="Name of the Python module used to process stats query "

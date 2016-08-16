@@ -1,49 +1,49 @@
 # Isilon Data Insights Connector
-The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon's Platform API (PAPI). It then has a pluggable module for processing the results of those queries. An example stat processor that sends the query results to an instance of InfluxDB is provided along with an example Grafana dashboard.
+The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon's Platform API (PAPI). It then has a pluggable module for processing the results of those queries. The provided stat processor, defined in influxdb_plugin.py, sends query results to an InfluxDB backend. Additionally, several Grafana dashboards are provided to make it easy to monitor the health and status of your Isilon clusters.
 
-# Install Dependencies Locally
+# Installation Instructions
+There are two ways to install the Connector. The local installation simply installs the required Python dependencies on the local system. The virtual environment installation installs the required Python dependencies in what's known as a Python Virtual Environment (see http://docs.python-guide.org/en/latest/dev/virtualenvs/). In both cases the Connector is designed to run directly from the source directory.
+
+# Local Installation Instructions
 * sudo pip install -r requirements.txt
-* Install Isilon SDK Python language bindings for OneFS 8.0.X and/or 7.2.X (see SDK version help below).
-* Instructions for SDK installation: https://github.com/Isilon/isilon_sdk
 
-# Install Virtual Environment
+# Virtual Environment Installation Instructions
 * To install the connector in a virtual environment run:
 ```sh
 ./setup_venv.sh
 ```
 
-# Isilon SDK Python Bindings Version Help
-* If you intend to monitor both 8.0 and 7.2 clusters with a single instance of the Isilon Data Insights Connector then you should install both the 8.0 SDK and the 7.2 SDK. However, it should be noted that the 7.2 version of the SDK will work with 8.0 clusters, but not as efficiently (at least in the case of the StatisticsApi), so it is possible, but not recommended, to use the Connector with 8.0 clusters and the 7.2 SDK.
-* If you intend to monitor only a single cluster or if all your clusters are either 8.0 or 7.2 then you should install the version of the SDK that matches the version of the clusters you intend to monitor.
-
-# Run it
-* Modify the provided configuration file (isi_data_insights_d.cfg) so that it points at the set of Isilon OneFS clusters that you want to query.
-* The default configuration file is setup to send the stats data to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB. InfluxDB can be installed locally (i.e on the same system as the Connector) or remotely (i.e. on a different system).
+# Run Instructions
+* Rename or copy the example configuration file, example_isi_data_insights_d.cfg, to isi_data_insights_d.cfg. The path ./isi_data_insights_d.cfg is the default configuration file path for the Connector. If you use that name and run the Connector from the source directory then you don't have to use the --config parameter to specify a different configuration file.
+* Next edit the isi_data_insights_d.cfg so that it is setup to query the set of Isilon OneFS clusters that you want to monitor, do this by modifying the config file's clusters parameter.
+* The example configuration file is pre-setup to send several sets of stats to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB. InfluxDB can be installed locally (i.e on the same system as the Connector) or remotely (i.e. on a different system).
 ```sh
 sudo apt-get install influxdb
 ```
-* If you installed InfluxDB to somewhere other than localhost and/or port 8086 then you'll also need to update the example configuration file with the address and port of the InfluxDB.
-* If you did a "Virtual Environment" install then be sure to activate the venv by running:
+* If you installed InfluxDB to somewhere other than localhost and/or port 8086 then you'll also need to update the configuration file with the address and port of the InfluxDB.
+* If you did a "Virtual Environment" install then be sure to activate it before running the Connector. Activate the venv by running:
 ```sh
 . .venv/bin/activate
 ```
-* Run it:
+* To run the Connector:
 ```sh
-./isi_data_insights_d.py -c ./isi_data_insights_d.cfg start
+./isi_data_insights_d.py start
 ```
 
-# View the example Grafana dashboard
-* Install and configure Grafana to use the InfluxDB that you installed previously.
-* Import the example Grafana dashboard: isi_data_insights_grafana_dashboard.gcfg
+# Grafana Setup
+Included with the Connector source code are three Grafana dashboards that make it easy to monitor the health and status of your Isilon clusters. To view the dashboards with Grafana, follow these instructions:
+* <a href='http://docs.grafana.org/installation/' taget='_blank'>Install and configure Grafana</a> to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana version 3.1.1. Also, note that the influxdb_plugin.py creates and stores the statistic data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
+* Import the Grafana dashboards: grafana_cluster_list_dashboard.gcfg, grafana_cluster_detail_dashboard.gcfg, and grafana_cluster_protocol_dashboard.gcfg. If you have already started the Connector then there should be data already in your database and displayed in the dashboards. One common issue that might prevent your dashboards from showing up correctly, is that the date/time on your Isilon clusters is not closely enough in-synch with the date/time used by Grafana, synchronizing the date/time of all the systems to within a few seconds of each other should be enough to fix the issue.
 
-# Write your own custom stats processor
-* If you would like to process the stats data differently than the provided influxdb_plugin.py then you can implement a custom stats processor.
-* Create a file called my_plugin.py that defines a process(cluster, stats) function that takes as input the name of a cluster and a list of isi_sdk/models/CurrentStatisticsStat objects.
+# Customizing the Connector
+The Connector is designed to allow for customization via a plugin architecture. The default plugin, influxd_plugin.py, is configured via the provided example configuration file. If you would like to process the stats data differently or send them to a different backend than the influxdb_plugin.py you can implement a custom stats processor. Here are the instructions for doing so:
+* Create a file called my_plugin.py, or whatever you want to name it.
+* In the my_plugin.py file define a process(cluster, stats) function that takes as input the name/ip-address of a cluster and a list of stats. The list of stats will contain instances of the isi_sdk_8_0/models/CurrentStatisticsStat class or isi_sdk_7_2/models/CurrenStatisticsStat class, but it makes no difference because the two classes are the same regardless of the version.
 * Optionally define a start(argv) function that takes a list of input args as defined in the config file via the stats_processor_args parameter.
 * Optionally define a stop() function.
-* Put the my_plugin.py file somewhere in your PYTHONPATH.
+* Put the my_plugin.py file somewhere in your PYTHONPATH (easiest is to put into the same directory as the other Python source code files).
 * Update the isi_data_insights_d.cfg file with the name of your plugin (i.e. 'my_plugin')
 * Restart the isi_data_insights_d.py daemon:
 ```sh
-./isi_data_insights_d.py -c ./isi_data_insights_d.cfg restart
+./isi_data_insights_d.py restart
 ```
