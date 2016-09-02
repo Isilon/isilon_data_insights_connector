@@ -1,5 +1,7 @@
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBServerError, InfluxDBClientError
+
+from ast import literal_eval
 import getpass
 import logging
 import requests
@@ -91,16 +93,16 @@ def process(cluster, stats):
         # to the points depending on the type of the stat's value.
         try:
             # the stat value's data type is variable depending on the key so
-            # use eval() to convert it to the correct type
-            eval_value = eval(stat.value)
-            # convert tuples to a list
+            # use literal_eval() to convert it to the correct type
+            eval_value = literal_eval(stat.value)
+            # convert tuples to a list for simplicity
             if type(eval_value) == tuple:
                 stat.value = list(eval_value)
             else:
                 stat.value = eval_value
-        except: # eval throws a myriad of exceptions, we need to catch them all
-            # if it doesn't convert to a different type then it is a string
-            # value, which does not really make sense for InfluxDB, but oh well.
+        except: # if literal_eval throws an exception we'll just insert it
+            # as string value, which does not really make sense for InfluxDB,
+            # but oh well.
             pass
         influxdb_point = \
                 _influxdb_point_from_stat(
