@@ -111,7 +111,7 @@ class IsiStatsClient(object):
                         expand_clientid=expand_clientid,
                         timeout=timeout)
 
-        return query_result.stats[0]
+        return query_result.stats
 
 
     def get_stats_metadata(self, stats=None):

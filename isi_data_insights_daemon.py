@@ -216,7 +216,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                     results = []
                     for stat in stats:
                         result = stats_client.query_stat(stat)
-                        results.append(result)
+                        results.extend(result)
 
             except cluster.isi_sdk.rest.ApiException as exc:
                 LOG.error("Failed to query stats from cluster %s, exception "\
