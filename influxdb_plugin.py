@@ -4,7 +4,7 @@ from influxdb.exceptions import InfluxDBServerError, InfluxDBClientError
 from ast import literal_eval
 import getpass
 import logging
-import requests
+import requests.exceptions
 import sys
 
 
@@ -85,8 +85,8 @@ def process(cluster, stats):
             tags["node"] = stat.devid
         # check if the stat query returned an error
         if stat.error is not None:
-            LOG.error("Query for stat: '%s', returned error: '%s'.",
-                    str(stat.key), str(stat.error))
+            LOG.warning("Query for stat: '%s' on '%s', returned error: '%s'.",
+                    str(stat.key), cluster, str(stat.error))
             continue
         # Process stat and then write points if list is large enough. Note
         # that an individual stat might result in multiple points being added
@@ -233,9 +233,9 @@ def _write_points(points, num_points):
     write_index = 0
     points_written = 0
     while write_index < num_points:
+        max_write_index = write_index + MAX_POINTS_PER_WRITE
+        write_points = points[write_index:max_write_index]
         try:
-            max_write_index = write_index + MAX_POINTS_PER_WRITE
-            write_points = points[write_index:max_write_index]
             g_client.write_points(write_points)
             points_written += len(write_points)
         except InfluxDBServerError as svr_exc:
@@ -245,6 +245,10 @@ def _write_points(points, num_points):
             LOG.error("InfluxDBClientError writing points: %s\n"\
                     "Error: %s", _get_point_names(write_points),
                     str(client_exc))
+        except requests.exceptions.ConnectionError as req_exc:
+            LOG.error("ConnectionError exception caught writing points: %s\n"\
+                    "Error: %s", _get_point_names(write_points),
+                    str(req_exc))
         write_index += MAX_POINTS_PER_WRITE
 
     return points_written

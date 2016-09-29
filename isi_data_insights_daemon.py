@@ -2,6 +2,7 @@ from daemons.prefab import run
 import logging
 import sys
 import time
+import urllib3.exceptions
 
 from isi_stats_client import IsiStatsClient
 
@@ -218,9 +219,10 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                         result = stats_client.query_stat(stat)
                         results.extend(result)
 
-            except cluster.isi_sdk.rest.ApiException as exc:
+            except (urllib3.exceptions.HTTPError,
+                    cluster.isi_sdk.rest.ApiException) as http_exc:
                 LOG.error("Failed to query stats from cluster %s, exception "\
-                          "raised: %s", cluster.name, str(exc))
+                          "raised: %s", cluster.name, str(http_exc))
                 continue
             # process the results
             self._stats_processor.process(cluster.name, results)
