@@ -1,5 +1,47 @@
 {
-  "id": 6,
+  "__inputs": [
+    {
+      "name": "DS_LOCAL_INFLUXDB",
+      "label": "Local influxdb",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "singlestat",
+      "name": "Singlestat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "3.1.1"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    }
+  ],
+  "id": null,
   "title": "Isilon Data Insights Protocol Detail",
   "tags": [],
   "style": "dark",
@@ -14,7 +56,7 @@
       "height": "250px",
       "panels": [
         {
-          "content": "* Use the pull down at the very top left of the page (next to the spiral icon) to select which dashboard you want to look at.\n* Use the cluster and other pull downs to select the cluster and protocol of interest.\n* Use highlight with your mouse the time period you want to zoom into or use the pull downs at the top right to select specific time periods.\n* Note that by default the dates and time displayed are in your browserâ€™s time zone, not the source cluster.   You can get it to display in UTC via the settings under the little gear symbol at the top of the page.\n* You can hide rows using the green slide-out tab to the left of each chart.\n* If there is a legend displayed you can click on elements within it to hide or display items, etc.\n* Click on the title of the chart and then the horizontal bars icon at the left to show/hide the legend and get a CSV export of the data.\n* There is no significance in whether things are displayed as lines, bars or points - we have used whatever seems to be clearest for the data.\n",
+          "content": "* Use the pull down at the very top left of the page (next to the spiral icon) to select which dashboard you want to look at.\n* Use the cluster and other pull downs to select the cluster and protocol of interest.\n* Use highlight with your mouse the time period you want to zoom into or use the pull downs at the top right to select specific time periods.\n* Note that by default the dates and time displayed are in your browser’s time zone, not the source cluster.   You can get it to display in UTC via the settings under the little gear symbol at the top of the page.\n* You can hide rows using the green slide-out tab to the left of each chart.\n* If there is a legend displayed you can click on elements within it to hide or display items, etc.\n* Click on the title of the chart and then the horizontal bars icon at the left to show/hide the legend and get a CSV export of the data.\n* There is no significance in whether things are displayed as lines, bars or points - we have used whatever seems to be clearest for the data.\n",
           "editable": true,
           "error": false,
           "id": 18,
@@ -55,14 +97,14 @@
         },
         {
           "cacheTimeout": null,
-          "colorBackground": true,
+          "colorBackground": false,
           "colorValue": false,
           "colors": [
             "rgba(50, 172, 45, 0.97)",
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "none",
@@ -74,6 +116,127 @@
             "thresholdMarkers": true
           },
           "id": 13,
+          "interval": null,
+          "isNew": true,
+          "links": [
+            {
+              "dashboard": "https://$cluster:8080/",
+              "targetBlank": true,
+              "title": "WebUI for $cluster",
+              "type": "absolute",
+              "url": "https://$cluster:8080/"
+            }
+          ],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "span": 1,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "cluster.node.count.all",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/^$cluster$/"
+                }
+              ]
+            }
+          ],
+          "thresholds": "1,2",
+          "title": "Total Nodes",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "",
+              "value": ""
+            }
+          ],
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": true,
+          "colorValue": false,
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "id": 30,
           "interval": null,
           "isNew": true,
           "links": [
@@ -183,7 +346,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "none",
@@ -324,7 +487,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "percentunit",
@@ -358,7 +521,7 @@
           "prefix": "",
           "prefixFontSize": "50%",
           "rangeMaps": [],
-          "span": 2,
+          "span": 1,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": true,
@@ -439,7 +602,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "percent",
@@ -473,7 +636,7 @@
           "prefix": "",
           "prefixFontSize": "50%",
           "rangeMaps": [],
-          "span": 2,
+          "span": 1,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": true,
@@ -499,8 +662,8 @@
               ],
               "measurement": "ifs.percent.used",
               "policy": "default",
-              "query": "SELECT mean(\"value\") FROM \"ifs.percent.used\" WHERE $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": false,
+              "query": "SELECT 100.0 - mean(\"value\") FROM \"ifs.percent.avail\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
               "refId": "A",
               "resultFormat": "time_series",
               "select": [
@@ -548,7 +711,128 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "format": "Bps",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "id": 32,
+          "interval": null,
+          "isNew": true,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "span": 1,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": true,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+          },
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "cluster.protostats.nfs.total_time_avg",
+              "policy": "default",
+              "query": "SELECT max(\"in_rate\") + mean(\"out_rate\") FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  },
+                  {
+                    "params": [
+                      "/1000"
+                    ],
+                    "type": "math"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/^$cluster$/"
+                }
+              ]
+            }
+          ],
+          "thresholds": "10,25",
+          "title": "$protocol Throughput",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "ops",
@@ -669,7 +953,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "ms",
@@ -792,7 +1076,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -832,7 +1116,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "alias": "$3 connections",
+              "alias": "Established $3 connections",
               "dsType": "influxdb",
               "groupBy": [
                 {
@@ -848,7 +1132,7 @@
                   "type": "fill"
                 }
               ],
-              "measurement": "node.clientstats.active.$protocol",
+              "measurement": "node.clientstats.connected.$protocol",
               "policy": "default",
               "query": "SELECT sum(\"value\") FROM \"node.clientstats.active.$protocol\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time(30s) fill(null)",
               "rawQuery": false,
@@ -875,11 +1159,56 @@
                   "value": "/$cluster$/"
                 }
               ]
+            },
+            {
+              "alias": "Active $3 connections",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "auto"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "node.clientstats.active.$protocol",
+              "policy": "default",
+              "query": "SELECT sum(\"value\") FROM \"node.clientstats.active.$protocol\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time(30s) fill(null)",
+              "rawQuery": false,
+              "refId": "B",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "sum"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/$cluster$/"
+                }
+              ]
             }
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Active $protocol Client Connections by for $cluster",
+          "title": "$protocol Client Connections by for $cluster",
           "tooltip": {
             "msResolution": true,
             "shared": true,
@@ -896,7 +1225,7 @@
               "label": "Connections",
               "logBase": 1,
               "max": null,
-              "min": null,
+              "min": 0,
               "show": true
             },
             {
@@ -923,7 +1252,7 @@
             "CPU Idle:": "#508642"
           },
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1099,7 +1428,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1291,7 +1620,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1499,7 +1828,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1686,7 +2015,7 @@
         {
           "aliasColors": {},
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1875,7 +2204,7 @@
           },
           "yaxes": [
             {
-              "format": "Âµs",
+              "format": "µs",
               "label": "Latency",
               "logBase": 1,
               "max": null,
@@ -1895,7 +2224,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2031,7 +2360,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2203,59 +2532,15 @@
     "list": [
       {
         "allFormat": "regex values",
-        "current": {
-          "text": "CSE-X200-1",
-          "value": "CSE-X200-1"
-        },
-        "datasource": null,
+        "current": {},
+        "datasource": "${DS_LOCAL_INFLUXDB}",
         "hide": 0,
         "includeAll": false,
         "label": "Cluster",
         "multi": false,
         "multiFormat": "glob",
         "name": "cluster",
-        "options": [
-          {
-            "text": "CSE-S200",
-            "value": "CSE-S200",
-            "selected": false
-          },
-          {
-            "text": "CSE-X200-1",
-            "value": "CSE-X200-1",
-            "selected": true
-          },
-          {
-            "text": "CSE-X200-2",
-            "value": "CSE-X200-2",
-            "selected": false
-          },
-          {
-            "text": "dog-pools",
-            "value": "dog-pools",
-            "selected": false
-          },
-          {
-            "text": "dog-puddles",
-            "value": "dog-puddles",
-            "selected": false
-          },
-          {
-            "text": "gromit",
-            "value": "gromit",
-            "selected": false
-          },
-          {
-            "text": "shasta",
-            "value": "shasta",
-            "selected": false
-          },
-          {
-            "text": "wallace",
-            "value": "wallace",
-            "selected": false
-          }
-        ],
+        "options": [],
         "query": "show tag values with key = \"cluster\"",
         "refresh": 1,
         "regex": "",
@@ -2263,7 +2548,8 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
+          "tags": [],
           "text": "nfs",
           "value": "nfs"
         },
@@ -2281,6 +2567,11 @@
           },
           {
             "selected": false,
+            "text": "nfs3",
+            "value": "nfs3"
+          },
+          {
+            "selected": false,
             "text": "nfs4",
             "value": "nfs4"
           },
@@ -2293,6 +2584,11 @@
             "selected": false,
             "text": "smb",
             "value": "smb"
+          },
+          {
+            "selected": false,
+            "text": "smb1",
+            "value": "smb1"
           },
           {
             "selected": false,
@@ -2323,9 +2619,14 @@
             "selected": false,
             "text": "lsass_out",
             "value": "lsass_out"
+          },
+          {
+            "selected": false,
+            "text": "papi",
+            "value": "papi"
           }
         ],
-        "query": "nfs,nfs4,cifs,smb,smb2,hdfs,ftp,siq,lsass_in,lsass_out",
+        "query": "nfs,nfs3,nfs4,cifs,smb,smb1,smb2,hdfs,ftp,siq,lsass_in,lsass_out,papi",
         "refresh": 0,
         "type": "custom"
       }
@@ -2336,8 +2637,7 @@
   },
   "refresh": false,
   "schemaVersion": 12,
-  "version": 4,
+  "version": 14,
   "links": [],
   "gnetId": null
 }
-
