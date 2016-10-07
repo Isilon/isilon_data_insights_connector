@@ -1,5 +1,47 @@
 {
-  "id": 1,
+  "__inputs": [
+    {
+      "name": "DS_LOCAL_INFLUXDB",
+      "label": "Local influxdb",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "singlestat",
+      "name": "Singlestat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "3.1.1"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    }
+  ],
+  "id": null,
   "title": "Isilon Data Insights Cluster Detail",
   "tags": [],
   "style": "dark",
@@ -14,7 +56,7 @@
       "height": "250px",
       "panels": [
         {
-          "content": "* Use the pull down at the very top left of the page (next to the spiral icon) to select which dashboard you want to look at.\n* Use the cluster and other pull downs to select the cluster and protocol of interest.\n* Use highlight with your mouse the time period you want to zoom into or use the pull downs at the top right to select specific time periods.\n* Note that by default the dates and time displayed are in your browserâ€™s time zone, not the source cluster.   You can get it to display in UTC via the settings under the little gear symbol at the top of the page.\n* You can hide rows using the green slide-out tab to the left of each chart.\n* If there is a legend displayed you can click on elements within it to hide or display items, etc.\n* Click on the title of the chart and then the horizontal bars icon at the left to show/hide the legend and get a CSV export of the data.\n* There is no significance in whether things are displayed as lines, bars or points - we have used whatever seems to be clearest for the data.\n",
+          "content": "* Use the pull down at the very top left of the page (next to the spiral icon) to select which dashboard you want to look at.\n* Use the cluster and other pull downs to select the cluster and protocol of interest.\n* Use highlight with your mouse the time period you want to zoom into or use the pull downs at the top right to select specific time periods.\n* Note that by default the dates and time displayed are in your browser’s time zone, not the source cluster.   You can get it to display in UTC via the settings under the little gear symbol at the top of the page.\n* You can hide rows using the green slide-out tab to the left of each chart.\n* If there is a legend displayed you can click on elements within it to hide or display items, etc.\n* Click on the title of the chart and then the horizontal bars icon at the left to show/hide the legend and get a CSV export of the data.\n* There is no significance in whether things are displayed as lines, bars or points - we have used whatever seems to be clearest for the data.\n",
           "editable": true,
           "error": false,
           "id": 18,
@@ -23,6 +65,7 @@
           "mode": "markdown",
           "span": 12,
           "title": "Welcome to the Isilon Detail Dashboard for $cluster",
+          "transparent": true,
           "type": "text"
         }
       ],
@@ -55,6 +98,127 @@
         },
         {
           "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "id": 32,
+          "interval": null,
+          "isNew": true,
+          "links": [
+            {
+              "dashboard": "https://$cluster:8080/",
+              "targetBlank": true,
+              "title": "WebUI for $cluster",
+              "type": "absolute",
+              "url": "https://$cluster:8080/"
+            }
+          ],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "span": 1,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "cluster.node.count.all",
+              "policy": "default",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/^$cluster$/"
+                }
+              ]
+            }
+          ],
+          "thresholds": "1,2",
+          "title": "Total Nodes",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "",
+              "value": ""
+            }
+          ],
+          "valueName": "avg"
+        },
+        {
+          "cacheTimeout": null,
           "colorBackground": true,
           "colorValue": false,
           "colors": [
@@ -62,7 +226,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "none",
@@ -183,7 +347,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "none",
@@ -324,7 +488,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "percentunit",
@@ -358,7 +522,7 @@
           "prefix": "",
           "prefixFontSize": "50%",
           "rangeMaps": [],
-          "span": 2,
+          "span": 1,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": true,
@@ -439,7 +603,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "percent",
@@ -473,7 +637,7 @@
           "prefix": "",
           "prefixFontSize": "50%",
           "rangeMaps": [],
-          "span": 2,
+          "span": 1,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": true,
@@ -499,8 +663,8 @@
               ],
               "measurement": "ifs.percent.used",
               "policy": "default",
-              "query": "SELECT mean(\"value\") FROM \"ifs.percent.used\" WHERE $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": false,
+              "query": "SELECT 100.0 - mean(\"value\") FROM \"ifs.percent.avail\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
               "refId": "A",
               "resultFormat": "time_series",
               "select": [
@@ -548,7 +712,128 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "format": "Bps",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "id": 33,
+          "interval": null,
+          "isNew": true,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "span": 1,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": true,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+          },
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "cluster.protostats.nfs.total_time_avg",
+              "policy": "default",
+              "query": "SELECT max(\"in_rate\") + mean(\"out_rate\") FROM \"cluster.protostats.nfs.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  },
+                  {
+                    "params": [
+                      "/1000"
+                    ],
+                    "type": "math"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/^$cluster$/"
+                }
+              ]
+            }
+          ],
+          "thresholds": "10,25",
+          "title": "NFSv3 Throughput",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "ops",
@@ -669,7 +954,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "ms",
@@ -783,14 +1068,135 @@
         },
         {
           "cacheTimeout": null,
-          "colorBackground": true,
+          "colorBackground": false,
           "colorValue": false,
           "colors": [
             "rgba(50, 172, 45, 0.97)",
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "format": "Bps",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "id": 34,
+          "interval": null,
+          "isNew": true,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "span": 1,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": true,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+          },
+          "targets": [
+            {
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "cluster.protostats.nfs.total_time_avg",
+              "policy": "default",
+              "query": "SELECT max(\"in_rate\") + mean(\"out_rate\") FROM \"cluster.protostats.smb2.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "max"
+                  },
+                  {
+                    "params": [
+                      "/1000"
+                    ],
+                    "type": "math"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/^$cluster$/"
+                }
+              ]
+            }
+          ],
+          "thresholds": "10,25",
+          "title": "SMB2 Throughput",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "ops",
@@ -856,7 +1262,7 @@
               ],
               "measurement": "cluster.protostats.nfs.total_time_avg",
               "policy": "default",
-              "query": "SELECT max(\"op_rate\") /1000 FROM \"cluster.protostats.smb2.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT max(\"op_rate\") FROM \"cluster.protostats.smb2.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "time_series",
@@ -911,7 +1317,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
           ],
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "format": "ms",
@@ -1032,29 +1438,25 @@
       "height": "250px",
       "panels": [
         {
-          "aliasColors": {
-            "CPU": "#7EB26D",
-            "CPU Idle:": "#508642"
-          },
-          "bars": true,
-          "datasource": null,
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
           "grid": {
-            "threshold1": null,
+            "threshold1": 80,
             "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+            "threshold2": 90,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)",
+            "thresholdLine": false
           },
-          "id": 1,
+          "id": 35,
           "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": true,
             "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
             "max": true,
             "min": true,
             "rightSide": true,
@@ -1065,38 +1467,19 @@
           },
           "lines": true,
           "linewidth": 2,
-          "links": [
-            {
-              "dashUri": "db/isilon-data-insights-protocol-detail",
-              "dashboard": "Isilon Data Insights Protocol Detail",
-              "includeVars": true,
-              "keepTime": true,
-              "title": "Protocol Detail",
-              "type": "dashboard"
-            }
-          ],
+          "links": [],
           "nullPointMode": "connected",
           "percentage": false,
-          "pointradius": 1,
+          "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "seriesOverrides": [
-            {
-              "alias": "CPU",
-              "bars": false,
-              "fill": 0
-            },
-            {
-              "alias": "/ops/",
-              "yaxis": 2
-            }
-          ],
+          "seriesOverrides": [],
           "span": 12,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
-              "alias": "CPU",
+              "alias": "Cluster Capacity Utilization",
               "dsType": "influxdb",
               "groupBy": [
                 {
@@ -1112,10 +1495,9 @@
                   "type": "fill"
                 }
               ],
-              "hide": false,
-              "measurement": "cluster.cpu.idle.avg",
+              "measurement": "ifs.percent.used",
               "policy": "default",
-              "query": "SELECT 1.0 - mean(\"value\") / 1000.0 FROM \"cluster.cpu.idle.avg\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT 100.0 - mean(\"value\") FROM \"ifs.percent.avail\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1137,61 +1519,16 @@
                 {
                   "key": "cluster",
                   "operator": "=~",
-                  "value": "/$cluster$/"
-                }
-              ]
-            },
-            {
-              "alias": "$2 ops",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "/cluster\\.protostats\\.(.*)\\.total_op_count/",
-              "policy": "default",
-              "query": "SELECT mean(\"op_rate\") FROM /cluster\\.protostats\\.(.*)\\.total/ WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "E",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/$cluster$/"
+                  "value": "/^$cluster$/"
                 }
               ]
             }
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Cluster Protocol Operations and CPU for $cluster",
+          "title": "Cluster Capacity Utilization",
           "tooltip": {
-            "msResolution": true,
+            "msResolution": false,
             "shared": true,
             "sort": 0,
             "value_type": "cumulative"
@@ -1202,282 +1539,25 @@
           },
           "yaxes": [
             {
-              "format": "percentunit",
-              "label": "CPU Busy",
-              "logBase": 1,
-              "max": 1,
-              "min": 0,
-              "show": true
-            },
-            {
-              "format": "ops",
-              "label": "Protocol Operations per Second",
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "showTitle": false,
-      "title": "Cluster CPU vs Protocol Operations"
-    },
-    {
-      "collapse": false,
-      "editable": true,
-      "height": "250px",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "datasource": null,
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 6,
-          "isNew": true,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "sideWidth": 500,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [
-            {
-              "dashUri": "db/isilon-data-insights-protocol-detail",
-              "dashboard": "Isilon Data Insights Protocol Detail",
-              "includeVars": true,
-              "keepTime": true,
-              "targetBlank": false,
-              "title": "Protocol Detail",
-              "type": "dashboard"
-            }
-          ],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 1,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 12,
-          "stack": false,
-          "steppedLine": true,
-          "targets": [
-            {
-              "alias": "$3 connections",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "30s"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "/node.clientstats.active.(.*)/",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") FROM /node.clientstats.active.(.*)/ WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "sum"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/$cluster$/"
-                }
-              ]
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Active Client Connections by Protocol for $cluster",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 2,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "xaxis": {
-            "show": true
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": "Connections",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": true,
-          "datasource": null,
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 19,
-          "isNew": true,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "hideEmpty": true,
-            "hideZero": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "sideWidth": 500,
-            "total": false,
-            "values": true
-          },
-          "lines": false,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 1,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "Open files",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "30s"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "node.open.files",
-              "policy": "default",
-              "query": "SELECT sum(\"value\") FROM \"node.open.files\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time(30s) fill(null)",
-              "rawQuery": false,
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/$cluster$/"
-                }
-              ]
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Open Files for $cluster",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 2,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "xaxis": {
-            "show": true
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": "Open File Count",
+              "format": "percent",
+              "label": "Cluster Capacity Utilization",
               "logBase": 1,
               "max": null,
               "min": 0,
               "show": true
             },
             {
-              "format": "short",
+              "format": "percent",
+              "label": "",
               "logBase": 1,
               "max": null,
-              "min": null,
+              "min": 0,
               "show": false
             }
           ]
         }
       ],
-      "showTitle": false,
-      "title": "Cluster Client Activity"
+      "title": "New row"
     },
     {
       "collapse": false,
@@ -1491,7 +1571,7 @@
             "User": "#EAB839"
           },
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 4,
@@ -1529,6 +1609,56 @@
           "stack": true,
           "steppedLine": false,
           "targets": [
+            {
+              "alias": "Interrupt",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "cluster.cpu.intr.avg",
+              "policy": "default",
+              "query": "SELECT mean(\"value\")  / 1000 FROM \"cluster.cpu.intr.avg\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "refId": "D",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  },
+                  {
+                    "params": [
+                      " / 1000"
+                    ],
+                    "type": "math"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/$cluster$/"
+                }
+              ]
+            },
             {
               "alias": "System",
               "dsType": "influxdb",
@@ -1679,56 +1809,6 @@
                   "value": "/$cluster$/"
                 }
               ]
-            },
-            {
-              "alias": "Interrupt",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.cpu.intr.avg",
-              "policy": "default",
-              "query": "SELECT mean(\"value\")  / 1000 FROM \"cluster.cpu.intr.avg\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "refId": "D",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      " / 1000"
-                    ],
-                    "type": "math"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/$cluster$/"
-                }
-              ]
             }
           ],
           "timeFrom": null,
@@ -1772,9 +1852,458 @@
       "height": "250px",
       "panels": [
         {
+          "aliasColors": {
+            "CPU": "#7EB26D",
+            "CPU Idle:": "#508642"
+          },
+          "bars": false,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 1,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 500,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [
+            {
+              "dashUri": "db/isilon-data-insights-protocol-detail",
+              "dashboard": "Isilon Data Insights Protocol Detail",
+              "includeVars": true,
+              "keepTime": true,
+              "title": "Protocol Detail",
+              "type": "dashboard"
+            }
+          ],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 1,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "CPU",
+              "bars": false,
+              "fill": 0
+            }
+          ],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "CPU",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "hide": true,
+              "measurement": "cluster.cpu.idle.avg",
+              "policy": "default",
+              "query": "SELECT 1.0 - mean(\"value\") / 1000.0 FROM \"cluster.cpu.idle.avg\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/$cluster$/"
+                }
+              ]
+            },
+            {
+              "alias": "$2 ops",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/cluster\\.protostats\\.(.*)\\.total_op_count/",
+              "policy": "default",
+              "query": "SELECT mean(\"op_rate\") FROM /cluster\\.protostats\\.(.*)\\.total/ WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": true,
+              "refId": "E",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/$cluster$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Cluster Protocol Operations and CPU for $cluster",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "ops",
+              "label": "Protocol Operations per Second",
+              "logBase": 1,
+              "max": null,
+              "min": 0,
+              "show": true
+            },
+            {
+              "format": "percentunit",
+              "label": "",
+              "logBase": 1,
+              "max": 1,
+              "min": 0,
+              "show": false
+            }
+          ]
+        }
+      ],
+      "showTitle": false,
+      "title": "Cluster CPU vs Protocol Operations"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 6,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 500,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [
+            {
+              "dashUri": "db/isilon-data-insights-protocol-detail",
+              "dashboard": "Isilon Data Insights Protocol Detail",
+              "includeVars": true,
+              "keepTime": true,
+              "targetBlank": false,
+              "title": "Protocol Detail",
+              "type": "dashboard"
+            }
+          ],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 1,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": true,
+          "targets": [
+            {
+              "alias": "$3 connections",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "/node.clientstats.active.(.*)/",
+              "policy": "default",
+              "query": "SELECT mean(\"value\") FROM /node.clientstats.active.(.*)/ WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "sum"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/$cluster$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Active Client Connections by Protocol for $cluster",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "sort": 2,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": "Connections",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
+        },
+        {
           "aliasColors": {},
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 19,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 500,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 1,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "Open files",
+              "dsType": "influxdb",
+              "groupBy": [
+                {
+                  "params": [
+                    "30s"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "measurement": "node.open.files",
+              "policy": "default",
+              "query": "SELECT sum(\"value\") FROM \"node.open.files\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time(30s) fill(null)",
+              "rawQuery": false,
+              "refId": "A",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "mean"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "cluster",
+                  "operator": "=~",
+                  "value": "/$cluster$/"
+                }
+              ]
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Open Files for $cluster",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "sort": 2,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "show": true
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": "Open File Count",
+              "logBase": 1,
+              "max": null,
+              "min": 0,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
+        }
+      ],
+      "showTitle": false,
+      "title": "Cluster Client Activity"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2035,7 +2564,7 @@
         {
           "aliasColors": {},
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2396,7 +2925,7 @@
             "cluster.net.ext.errors.in.rate.mean": "#BF1B00"
           },
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2569,7 +3098,7 @@
             "CPU": "#7EB26D"
           },
           "bars": true,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2705,7 +3234,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2831,7 +3360,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": null,
+          "datasource": "${DS_LOCAL_INFLUXDB}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -3408,577 +3937,6 @@
         }
       ],
       "title": "Cache Stats"
-    },
-    {
-      "collapse": false,
-      "editable": true,
-      "height": "250px",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "datasource": null,
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 28,
-          "isNew": true,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "sideWidth": 500,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [
-            {
-              "dashUri": "db/isilon-data-insights-protocol-detail",
-              "dashboard": "Isilon Data Insights Protocol Detail",
-              "includeVars": true,
-              "keepTime": true,
-              "title": "Protocol Details",
-              "type": "dashboard"
-            }
-          ],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "Write",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total",
-              "policy": "default",
-              "query": "SELECT mean(\"in_rate\") FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "in_rate"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            },
-            {
-              "alias": "Read",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total",
-              "policy": "default",
-              "query": "SELECT mean(\"out_rate\") FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "D",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "out_rate"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            },
-            {
-              "alias": "Total",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total",
-              "policy": "default",
-              "query": "SELECT mean(\"out_rate\") + mean(\"in_rate\") FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "E",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "out_rate"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "$protocol Throughput for $cluster",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 2,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "xaxis": {
-            "show": true
-          },
-          "yaxes": [
-            {
-              "format": "Bps",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": true
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "datasource": null,
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 30,
-          "isNew": true,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "sideWidth": 500,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [
-            {
-              "dashUri": "db/isilon-data-insights-protocol-detail",
-              "dashboard": "Isilon Data Insights Protocol Detail",
-              "includeVars": true,
-              "keepTime": true,
-              "title": "Protocol Details",
-              "type": "dashboard"
-            }
-          ],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "$protocol ops",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total",
-              "policy": "default",
-              "query": "SELECT mean(\"op_rate\") FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "in_rate"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "$protocol Operations Rate for $cluster",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 2,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "xaxis": {
-            "show": true
-          },
-          "yaxes": [
-            {
-              "format": "ops",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": false
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": true,
-          "datasource": null,
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {
-            "threshold1": 10,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": 25,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 7,
-          "isNew": true,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "sideWidth": 500,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [
-            {
-              "dashUri": "db/isilon-data-insights-protocol-detail",
-              "dashboard": "Isilon Data Insights Protocol Detail",
-              "includeVars": true,
-              "keepTime": true,
-              "title": "Protocol Details",
-              "type": "dashboard"
-            }
-          ],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 1,
-          "points": true,
-          "renderer": "flot",
-          "repeat": null,
-          "seriesOverrides": [],
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "$2 avg",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total_time_avg",
-              "policy": "default",
-              "query": "SELECT mean(\"time_avg\") / 1000 FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            },
-            {
-              "alias": "$2 min",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total_time_min",
-              "policy": "default",
-              "query": "SELECT mean(\"time_min\") / 1000 FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            },
-            {
-              "alias": "$2 max",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "cluster.protostats.nfs.total_time_max",
-              "policy": "default",
-              "query": "SELECT mean(\"time_max\") / 1000 FROM \"cluster.protostats.$protocol.total\" WHERE \"cluster\" =~ /^$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
-              "rawQuery": true,
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "cluster",
-                  "operator": "=~",
-                  "value": "/^$cluster$/"
-                }
-              ]
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Average Latency for all $protocol Operations for $cluster",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 0,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "xaxis": {
-            "show": true
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": "Latency",
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": 0,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "showTitle": true,
-      "title": "$protocol Statistics"
     }
   ],
   "time": {
@@ -4015,141 +3973,28 @@
     "list": [
       {
         "allFormat": "regex values",
-        "current": {
-          "text": "CSE-X200-1",
-          "value": "CSE-X200-1"
-        },
-        "datasource": null,
+        "current": {},
+        "datasource": "${DS_LOCAL_INFLUXDB}",
         "hide": 0,
         "includeAll": false,
         "label": "Cluster",
         "multi": false,
         "multiFormat": "glob",
         "name": "cluster",
-        "options": [
-          {
-            "text": "CSE-S200",
-            "value": "CSE-S200",
-            "selected": false
-          },
-          {
-            "text": "CSE-X200-1",
-            "value": "CSE-X200-1",
-            "selected": true
-          },
-          {
-            "text": "CSE-X200-2",
-            "value": "CSE-X200-2",
-            "selected": false
-          },
-          {
-            "text": "dog-pools",
-            "value": "dog-pools",
-            "selected": false
-          },
-          {
-            "text": "dog-puddles",
-            "value": "dog-puddles",
-            "selected": false
-          },
-          {
-            "text": "gromit",
-            "value": "gromit",
-            "selected": false
-          },
-          {
-            "text": "shasta",
-            "value": "shasta",
-            "selected": false
-          },
-          {
-            "text": "wallace",
-            "value": "wallace",
-            "selected": false
-          }
-        ],
+        "options": [],
         "query": "show tag values with key = \"cluster\"",
         "refresh": 1,
         "regex": "",
         "type": "query"
-      },
-      {
-        "current": {
-          "tags": [],
-          "text": "nfs",
-          "value": "nfs"
-        },
-        "datasource": null,
-        "hide": 0,
-        "includeAll": false,
-        "label": "Protocol",
-        "multi": false,
-        "name": "protocol",
-        "options": [
-          {
-            "selected": true,
-            "text": "nfs",
-            "value": "nfs"
-          },
-          {
-            "selected": false,
-            "text": "nfs4",
-            "value": "nfs4"
-          },
-          {
-            "selected": false,
-            "text": "cifs",
-            "value": "cifs"
-          },
-          {
-            "selected": false,
-            "text": "smb",
-            "value": "smb"
-          },
-          {
-            "selected": false,
-            "text": "smb2",
-            "value": "smb2"
-          },
-          {
-            "selected": false,
-            "text": "hdfs",
-            "value": "hdfs"
-          },
-          {
-            "selected": false,
-            "text": "ftp",
-            "value": "ftp"
-          },
-          {
-            "selected": false,
-            "text": "siq",
-            "value": "siq"
-          },
-          {
-            "selected": false,
-            "text": "lsass_in",
-            "value": "lsass_in"
-          },
-          {
-            "selected": false,
-            "text": "lsass_out",
-            "value": "lsass_out"
-          }
-        ],
-        "query": "nfs,nfs4,cifs,smb,smb2,hdfs,ftp,siq,lsass_in,lsass_out",
-        "refresh": 0,
-        "type": "custom"
       }
     ]
   },
   "annotations": {
     "list": []
   },
-  "refresh": false,
+  "refresh": "30s",
   "schemaVersion": 12,
-  "version": 117,
+  "version": 143,
   "links": [],
   "gnetId": null
 }
-
