@@ -2550,8 +2550,8 @@
         "current": {
           "selected": false,
           "tags": [],
-          "text": "nfs",
-          "value": "nfs"
+          "text": "smb2",
+          "value": "smb2"
         },
         "datasource": null,
         "hide": 0,
@@ -2561,7 +2561,7 @@
         "name": "protocol",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "nfs",
             "value": "nfs"
           },
@@ -2591,7 +2591,7 @@
             "value": "smb1"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "smb2",
             "value": "smb2"
           },
