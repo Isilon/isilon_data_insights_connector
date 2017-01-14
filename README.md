@@ -44,6 +44,11 @@ Included with the Connector source code are three Grafana dashboards that make i
 ![Cluster Protocol Detail Dashboard Screen Shot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/master/IsilonDataInsightsClusterProtocolDetail.JPG)
 * If you have already started the Connector then there should be data already in your database and displayed in the dashboards. One common issue that might prevent your dashboards from showing up correctly, is that the date/time on your Isilon clusters is not closely enough in-synch with the date/time used by Grafana, synchronizing the date/time of all the systems to within a few seconds of each other should be enough to fix the issue.
 
+# Kapacitor Integration
+Kapacitor (https://www.influxdata.com/time-series-platform/kapacitor/) is an add-on component that when used in conjunction with the Connector enables flexible, configurable, real-time notifications of alert conditions based off the statistics data streaming into the InfluxDB. For more information on how to integrate the Connector and InfluxDB with Kapacitor refer to:
+
+[Kapacitor Integration Instructions](https://github.com/Isilon/isilon_data_insights_connector/blob/master/README_KAPACITOR_INTEGRATION.md)
+
 # Customizing the Connector
 The Connector is designed to allow for customization via a plugin architecture. The default plugin, influxd_plugin.py, is configured via the provided example configuration file. If you would like to process the stats data differently or send them to a different backend than the influxdb_plugin.py you can implement a custom stats processor. Here are the instructions for doing so:
 * Create a file called my_plugin.py, or whatever you want to name it.
