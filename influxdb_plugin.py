@@ -76,11 +76,11 @@ def process(cluster, stats):
     InfluxDB service. Organize the measurements by cluster and node via tags.
     """
     LOG.debug("Processing stats %d.", len(stats))
-    tags = {"cluster": cluster}
     influxdb_points = []
     num_points = 0
     points_written = 0
     for stat in stats:
+        tags = {"cluster": cluster}
         if stat.devid != 0:
             tags["node"] = stat.devid
         # check if the stat query returned an error
