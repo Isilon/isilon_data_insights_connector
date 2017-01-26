@@ -2,7 +2,13 @@
 The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon's Platform API (PAPI). It then has a pluggable module for processing the results of those queries. The provided stat processor, defined in influxdb_plugin.py, sends query results to an InfluxDB backend. Additionally, several Grafana dashboards are provided to make it easy to monitor the health and status of your Isilon clusters.
 
 # Installation Instructions
-There are two ways to install the Connector. The local installation simply installs the required Python dependencies on the local system. The virtual environment installation installs the required Python dependencies in what's known as a Python Virtual Environment (see http://docs.python-guide.org/en/latest/dev/virtualenvs/). In both cases the Connector is designed to run directly from the source directory.
+For detailed instructions on setting up a VM and installing the Connector on the VM refer to:
+
+https://community.emc.com/blogs/keith/2017/01/26/isilon-data-insights-connector--do-it-yourself-isilon-monitoring
+
+For a bit less detail, perhaps quicker setup, refer to the instructions below.
+
+There are three ways to install the Connector. The local installation simply installs the required Python dependencies on the local system. The virtual environment installation installs the required Python dependencies in what's known as a Python Virtual Environment (see http://docs.python-guide.org/en/latest/dev/virtualenvs/). In both cases the Connector is designed to run directly from the source directory.
 
 # Local Installation Instructions
 * sudo pip install -r requirements.txt
