@@ -4,3 +4,4 @@ pip >= 8.0.2
 urllib3 >= 1.13.1
 isi_sdk_8_0 >= 0.1.2
 isi_sdk_7_2 >= 0.1.2
+Equation >= 1.2.01
