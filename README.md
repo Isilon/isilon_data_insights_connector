@@ -69,9 +69,9 @@ The Connector is designed to allow for customization via a plugin architecture. 
 ```
 # Extending and/or Contributing to the Connector
 
-There are multiple ways for anyone using to interact with our dev team to request new features or discuss problems.
+There are multiple ways for anyone using the Connector to interact with our dev team to request new features or discuss problems.
 
-* Create a new issue on the “Issues” section.   E.g. https://github.com/Isilon/isilon_data_insights_connector/issues
+* Create a new issue on the “Issues” section.   https://github.com/Isilon/isilon_data_insights_connector/issues
 * The “Discussion” capability of the Isilon SDK Info Hub page.  https://community.emc.com/docs/DOC-48273
 * The most effective is the #isilon channel on codecommunity.slack.com.
 
