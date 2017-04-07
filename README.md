@@ -67,3 +67,14 @@ The Connector is designed to allow for customization via a plugin architecture. 
 ```sh
 ./isi_data_insights_d.py restart
 ```
+# Extending and/or Contributing to the Connector
+
+There are multiple ways for anyone using to interact with our dev team to request new features or discuss problems.
+
+* Create a new issue on the “Issues” section.   E.g. https://github.com/Isilon/isilon_data_insights_connector/issues
+* The “Discussion” capability of the Isilon SDK Info Hub page.  https://community.emc.com/docs/DOC-48273
+* The most effective is the #isilon channel on codecommunity.slack.com.
+
+Also, just like an other project on github.com we are entirely open to external code contributions:
+
+* Fork the project, modify it, then initiate a pull request.
