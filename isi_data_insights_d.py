@@ -44,7 +44,7 @@ def main():
             print "Restarting daemon with pid " + str(daemon.pid)
             daemon.restart()
         else:
-            daemon.run()
+            daemon.run(debug=True)
     elif args.action == "stop":
         print "Stopping daemon with pid " + str(daemon.pid)
         daemon.stop()
