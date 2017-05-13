@@ -7,10 +7,16 @@ import ConfigParser
 import getpass
 import logging
 import os
+import re
 import sys
 import urllib3
 
-from isi_data_insights_daemon import StatsConfig, ClusterConfig
+from ast import literal_eval
+from Equation import Expression
+
+from isi_data_insights_daemon import StatsConfig, ClusterConfig, \
+        ClusterCompositeStatComputer, EquationStatComputer, \
+        PercentChangeStatComputer, DerivedStatInput
 from isi_stats_client import IsiStatsClient
 import isi_sdk_utils
 
@@ -33,6 +39,17 @@ MIN_UPDATE_INTERVAL = 30 # seconds
 # name of the config file param that can be used to specify a lower
 # MIN_UPDATE_INTERVAL.
 MIN_UPDATE_INTERVAL_OVERRIDE_PARAM = "min_update_interval_override"
+
+def avg(stat_values):
+    return sum(stat_values) / len(stat_values)
+
+# operations use by ClusterCompositeStatComputer
+COMPOSITE_OPERATIONS = {
+    "avg": avg,
+    "max": max,
+    "min": min,
+    "sum": sum
+}
 
 # keep track of auth data that we have username and passwords for so that we
 # don't prompt more than once.
@@ -76,14 +93,13 @@ def _process_config_file_clusters(clusters):
         else:
             try:
                 # try to convert to a bool
-                verify_ssl = eval(verify_ssl_split[-1])
+                verify_ssl = literal_eval(verify_ssl_split[-1])
                 if type(verify_ssl) != bool:
                     raise Exception
             except Exception:
                 print >> sys.stderr, "Config file contains invalid cluster "\
-                        "config: %s in %s (expected True or False on end, "\
-                        "but got %s)." % (cluster_config, clusters,
-                                cluster_config[verify_ssl_index+1:])
+                        "config: %s (expected True or False on end)" \
+                        % (cluster_config)
                 sys.exit(1)
             cluster_address = verify_ssl_split[0]
         # add to cache of known cluster auth usernames and passwords
@@ -168,7 +184,11 @@ def _build_cluster_configs(cluster_list):
 
 
 def _configure_stat_group(daemon,
-        update_interval, cluster_configs, stats_list):
+        update_interval, cluster_configs, stats_list,
+        cluster_composite_stats=None,
+        equation_stats=None,
+        pct_change_stats=None,
+        final_equation_stats=None):
     """
     Configure the daemon with some StatsConfigs.
     """
@@ -184,6 +204,14 @@ def _configure_stat_group(daemon,
         update_interval = MIN_UPDATE_INTERVAL
     stats_config = \
         StatsConfig(cluster_configs, stats_list, update_interval)
+    if cluster_composite_stats is not None:
+        stats_config.cluster_composite_stats.extend(cluster_composite_stats)
+    if equation_stats is not None:
+        stats_config.equation_stats.extend(equation_stats)
+    if pct_change_stats is not None:
+        stats_config.pct_change_stats.extend(pct_change_stats)
+    if final_equation_stats is not None:
+        stats_config.final_equation_stats.extend(final_equation_stats)
     daemon.add_stats(stats_config)
 
 
@@ -268,6 +296,32 @@ def _configure_stat_groups_via_file(daemon,
     stat_names = config_file.get(stat_group, "stats").split()
     # remove duplicates
     stat_names = list(set(stat_names))
+    # deal with derived stats (if any)
+    composite_stats = []
+    if config_file.has_option(stat_group, "composite_stats") is True:
+        composite_stats = \
+                _parse_derived_stats(config_file,
+                        stat_group, "composite_stats",
+                        _parse_composite_stats)
+
+    eq_stats = []
+    if config_file.has_option(stat_group, "equation_stats") is True:
+        eq_stats = \
+                _build_equation_stats_list(
+                        config_file, stat_group, "equation_stats")
+
+    pct_change_stats = []
+    if config_file.has_option(stat_group, "percent_change_stats") is True:
+        pct_change_stats = \
+                _parse_derived_stats(config_file,
+                        stat_group, "percent_change_stats",
+                        _parse_pct_change_stats)
+
+    final_eq_stats = []
+    if config_file.has_option(stat_group, "final_equation_stats") is True:
+        final_eq_stats = \
+                _build_equation_stats_list(
+                        config_file, stat_group, "final_equation_stats")
 
     update_intervals = {}
     if update_interval_param.startswith("*"):
@@ -292,15 +346,157 @@ def _configure_stat_groups_via_file(daemon,
         update_intervals[update_interval] = \
                 (cluster_configs, stat_names)
 
-    for update_interval, clusters_stats_tuple in update_intervals.iteritems():
-        # first item in clusters_stats_tuple is the unique list of clusters
-        # associated with the current update_interval, the second item is the
-        # unique list of stats to query on the set of clusters at the current
-        # update_interval.
+    # TODO - fix this - for now if there are derived stats then we are going to
+    # query all the stats in this section at once (i.e. using the the smallest
+    # of the configured update intervals) in order to make sure that all of the
+    # input parameters of the derived stats are available at once.
+    if len(composite_stats) > 0 \
+            or len(eq_stats) > 0 \
+            or len(pct_change_stats) > 0 \
+            or len(final_eq_stats) > 0:
+        update_interval_keys = update_intervals.keys()
+        update_interval_keys.sort()
+        update_interval = update_interval_keys[0]
         _configure_stat_group(daemon,
                 update_interval,
-                clusters_stats_tuple[0],
-                clusters_stats_tuple[1])
+                cluster_configs, stat_names,
+                composite_stats, eq_stats, pct_change_stats, final_eq_stats)
+    else:
+        for update_interval, clusters_stats_tuple \
+                in update_intervals.iteritems():
+            # first item in clusters_stats_tuple is the unique list of clusters
+            # associated with the current update_interval, the second item is the
+            # unique list of stats to query on the set of clusters at the current
+            # update_interval.
+            _configure_stat_group(daemon,
+                    update_interval,
+                    clusters_stats_tuple[0],
+                    clusters_stats_tuple[1])
+
+
+def _parse_derived_stats(config_file, stat_group, derived_stats_name, parse_func):
+    derived_stats_cfg = config_file.get(stat_group, derived_stats_name)
+    try:
+        derived_stats = \
+                parse_func(derived_stats_cfg)
+    except RuntimeError as rterr:
+        print >> sys.stderr, "Failed to parse %s from %s " \
+                "section. %s" % (derived_stats_name, stat_group, str(rterr))
+        sys.exit(1)
+
+    return derived_stats
+
+
+def _parse_fields(in_stat_name):
+    split_name = in_stat_name.split(":")
+    if len(split_name) == 1:
+        return in_stat_name, None
+
+    return split_name[0], tuple(split_name[1:])
+
+
+def _parse_composite_stats(composite_stats_cfg):
+    # Example of what is expected for each stat_cfg:
+    # sum(node.ifs.ops.in[:field1:field2])
+    composite_stats = []
+    for stat_cfg in composite_stats_cfg.split():
+        bracket1 = stat_cfg.find('(')
+        bracket2 = stat_cfg.find(')')
+        if bracket1 <= 0 or bracket2 == -1 \
+                or bracket1 > bracket2:
+            raise RuntimeError("Failed to parse operation from %s." \
+                    "Expected: op(stat) where op is avg, min, max, " \
+                    " or sum and stat is the name of a base OneFS " \
+                    " statistic name that starts with \"node.\"." \
+                    % stat_cfg)
+        op_name = stat_cfg[0:bracket1]
+        if op_name not in COMPOSITE_OPERATIONS:
+            raise RuntimeError("Invalid operation %s specified for %s." \
+                    % (op_name, stat_cfg))
+
+        in_stat_name = stat_cfg[bracket1+1:bracket2]
+        if in_stat_name.startswith("node.") is False:
+            raise RuntimeError("Invalid stat name %s specified for %s." \
+                    " Composite stats must start with \"node.\"." \
+                    % (op_name, stat_cfg))
+        out_stat_name = "cluster.%s.%s" \
+                % (in_stat_name.replace(':', '.'), op_name)
+        in_stat_name, fields = _parse_fields(in_stat_name)
+        # TODO should validate that this is a valid stat name
+        composite_stat = \
+                ClusterCompositeStatComputer(
+                    DerivedStatInput(in_stat_name, fields), out_stat_name,
+                    COMPOSITE_OPERATIONS[op_name])
+        composite_stats.append(composite_stat)
+
+    return composite_stats
+
+
+def _build_equation_stats_list(config_file, stat_group, equation_stats):
+    eq_stats = []
+    eq_stats_list = config_file.get(stat_group, equation_stats).split()
+    for eq_stat in eq_stats_list:
+        eq_stat_names = \
+                _parse_derived_stats(config_file,
+                        stat_group, eq_stat,
+                        _parse_equation_stats)
+        cfg_expression = config_file.get(stat_group, eq_stat)
+        # the Equation package doesn't like having '.' characters in the
+        # input param names, so we have to replace them with placeholder
+        # names.
+        eq_func = \
+                _build_equation_expression(cfg_expression, eq_stat_names)
+        eq_stat_inputs = _build_equation_stat_inputs(eq_stat_names)
+        eq_stats.append(EquationStatComputer(eq_func, eq_stat_inputs, eq_stat))
+
+    return eq_stats
+
+
+def _build_equation_stat_inputs(eq_stat_names):
+    input_stats = []
+    for stat_name in eq_stat_names:
+        stat_name, fields = _parse_fields(stat_name)
+        input_stats.append(DerivedStatInput(stat_name, fields))
+
+    return input_stats
+
+
+def _parse_equation_stats(equation_stat_expression):
+    # Example of what is expected:
+    # (cluster.node.ifs.ops.in.sum + cluster.node.ifs.ops.out.sum)
+    # * cluster.node.disk.iosched.latency.avg.avg
+    # Example of what is expected from stat with specific fields:
+    # (cluster.protostats.nfs.total:op_count
+    #  + cluster.protostats.smb2.total:op_count)
+    equation_stats = re.findall("[a-zA-Z.:_0-9]+", equation_stat_expression)
+
+    # remove items that don't start with an alphabet character
+    equation_stats = [eq_stat for eq_stat in equation_stats \
+            if eq_stat[0].isalpha()]
+    return equation_stats
+
+
+def _build_equation_expression(cfg_expression, eq_stat_names):
+    params_list = []
+    for eindex in range(0, len(eq_stat_names)):
+        eq_stat_name = eq_stat_names[eindex]
+        param_name = "param" + str(eindex)
+        cfg_expression = cfg_expression.replace(eq_stat_name, param_name, 1)
+        params_list.append(param_name)
+
+    return Expression(cfg_expression, params_list)
+
+
+def _parse_pct_change_stats(pct_change_stats_cfg):
+    # Expected is just a white-space delimitted list of stat names
+    pct_change_stats = []
+    for stat_name in pct_change_stats_cfg.split():
+        out_stat_name = stat_name.replace(':', '.') + ".percentchange"
+        stat_name, fields = _parse_fields(stat_name)
+        pct_change_stats.append(
+            PercentChangeStatComputer(
+                DerivedStatInput(stat_name, fields), out_stat_name))
+    return pct_change_stats
 
 
 def _configure_stat_groups_via_cli(daemon, args):
