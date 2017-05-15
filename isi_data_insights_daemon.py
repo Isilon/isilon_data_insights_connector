@@ -530,7 +530,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
             yield update_interval, stat_set
 
 
-    def run(self):
+    def run(self, debug=False):
         """
         Loop through stat sets, query for their values, and process them with
         the stats processor.
@@ -550,7 +550,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
 
             # query and process the stat sets whose update interval has been
             # hit or surpassed.
-            self._query_and_process_stats(time.time())
+            self._query_and_process_stats(time.time(), debug)
 
             cur_time = time.time()
             # figure out the shortest amount of time until the next update is
@@ -577,7 +577,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         super(IsiDataInsightsDaemon, self).shutdown(signum)
 
 
-    def _query_and_process_stats(self, cur_time):
+    def _query_and_process_stats(self, cur_time, debug):
         """
         Build a unique set of stats to update per cluster from each set of
         stats that are in need of updating based on the amount of time elapsed
@@ -649,7 +649,16 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                 LOG.error("Failed to query stats from cluster %s, exception "\
                           "raised: %s", cluster.name, str(http_exc))
                 continue
-
+            except Exception as gen_exc:
+                # if in debug mode then re-raise general Exceptions because
+                # they are most likely bugs in the code, but in non-debug mode
+                # just continue
+                if debug is False:
+                    LOG.error("Failed to query stats from cluster %s, exception "\
+                              "raised: %s", cluster.name, str(gen_exc))
+                    continue
+                else:
+                    raise gen_exc
 
             composite_stats_processor = \
                     DerivedStatsProcessor(composite_stats)
