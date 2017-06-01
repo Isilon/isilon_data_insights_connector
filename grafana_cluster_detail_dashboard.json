@@ -2848,7 +2848,7 @@
                 }
               ],
               "hide": false,
-              "measurement": "cluster.disk.bytes.out.rate",
+              "measurement": "cluster.disk.bytes.in.rate",
               "policy": "default",
               "query": "SELECT mean(\"value\") FROM \"cluster.net.ext.packets.in.rate\" WHERE \"cluster\" =~ /$cluster$/ AND $timeFilter GROUP BY time($interval) fill(null)",
               "refId": "F",
