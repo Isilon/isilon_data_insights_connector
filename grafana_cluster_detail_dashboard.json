@@ -336,7 +336,7 @@
               "value": ""
             }
           ],
-          "valueName": "avg"
+          "valueName": "current"
         },
         {
           "cacheTimeout": null,
