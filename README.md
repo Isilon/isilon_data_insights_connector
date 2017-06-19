@@ -51,9 +51,9 @@ Included with the Connector source code are three Grafana dashboards that make i
 
 Import (optional) HDFS specific dashboards:
 * grafana_hadoop_home.json
-![Hadoop Home Dashboard Screeenshot](https://github.com/nickyruggs/isilon_data_insights_connector/blob/master/HDFS-datanode-1.png)
+![Hadoop Home Dashboard Screeenshot](https://github.com/nickyruggs/isilon_data_insights_connector/blob/master/HDFS-home-1.png)
 * grafana_hadoop_datanodes.json
-![Hadoop Home Dashboard Screeenshot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/nickyruggs/HDFS-datanode-1.png)
+![Hadoop Home Dashboard Screeenshot](https://github.com/nickyruggs/isilon_data_insights_connector/blob/master/HDFS-datanode-1.png)
 
 * If you have already started the Connector then there should be data already in your database and displayed in the dashboards. One common issue that might prevent your dashboards from showing up correctly, is that the date/time on your Isilon clusters is not closely enough in-synch with the date/time used by Grafana, synchronizing the date/time of all the systems to within a few seconds of each other should be enough to fix the issue.
 
