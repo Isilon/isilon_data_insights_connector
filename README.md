@@ -51,7 +51,7 @@ Included with the Connector source code are three Grafana dashboards that make i
 
 Import (optional) HDFS specific dashboards:
 * grafana_hadoop_home.json
-![Hadoop Home Dashboard Screeenshot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/nickyruggs/HDFS-home-1.png)
+![Hadoop Home Dashboard Screeenshot](https://github.com/nickyruggs/isilon_data_insights_connector/blob/master/HDFS-datanode-1.png)
 * grafana_hadoop_datanodes.json
 ![Hadoop Home Dashboard Screeenshot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/nickyruggs/HDFS-datanode-1.png)
 
