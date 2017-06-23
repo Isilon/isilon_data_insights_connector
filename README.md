@@ -38,7 +38,7 @@ sudo apt-get install influxdb
 
 # Grafana Setup
 Included with the Connector source code are three Grafana dashboards that make it easy to monitor the health and status of your Isilon clusters. To view the dashboards with Grafana, follow these instructions:
-* <a href='http://docs.grafana.org/installation/' taget='_blank'>Install and configure Grafana</a> to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana version 3.1.1. Also, note that the influxdb_plugin.py creates and stores the statistic data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
+* <a href='http://docs.grafana.org/installation/' taget='_blank'>Install and configure Grafana</a> to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana version 4.3.1. Also, note that the influxdb_plugin.py creates and stores the statistic data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
 * Import the Grafana dashboards.
  * grafana_cluster_list_dashboard.json
 ![Multi-cluster Summary Dashboard Screen Shot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/master/IsilonDataInsightsMultiClusterSummary.JPG) 
