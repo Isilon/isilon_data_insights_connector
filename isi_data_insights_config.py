@@ -225,13 +225,18 @@ def _query_stats_metadata(cluster, stat_names):
     return isi_stats_client.get_stats_metadata(stat_names)
 
 
-def _compute_stat_group_update_intervals(update_interval_multiplier,
-        cluster_configs, stat_names, update_intervals):
+def _compute_stat_group_update_intervals(
+        update_interval_multiplier,
+        cluster_configs,
+        stat_names,
+        update_intervals):
     # update interval is supposed to be set relative to the collection
     # interval, which might be different for each stat and each cluster.
     for cluster in cluster_configs:
         stats_metadata = _query_stats_metadata(cluster, stat_names)
-        for stat_metadata in stats_metadata:
+        for stat_index in range(0, len(stats_metadata)):
+            stat_metadata = stats_metadata[stat_index]
+            stat_name = stat_names[stat_index]
             # cache time is the length of time the system will store the
             # value before it updates.
             cache_time = -1
@@ -261,11 +266,11 @@ def _compute_stat_group_update_intervals(update_interval_multiplier,
             try:
                 update_interval = update_intervals[cache_time]
                 update_interval[0].add(cluster)
-                update_interval[1].add(stat_metadata.key)
+                update_interval[1].add(stat_name)
             except KeyError:
                 # insert a new interval time
                 update_intervals[cache_time] = \
-                        (set([cluster]), set([stat_metadata.key]))
+                        (set([cluster]), set([stat_name]))
 
 
 def _configure_stat_groups_via_file(daemon,
@@ -334,7 +339,9 @@ def _configure_stat_groups_via_file(daemon,
             sys.exit(1)
         print "Computing update intervals for stat group: %s." % stat_group
         _compute_stat_group_update_intervals(
-                update_interval_multiplier, cluster_configs, stat_names,
+                update_interval_multiplier,
+                cluster_configs,
+                stat_names,
                 update_intervals)
     else:
         try:
