@@ -92,22 +92,24 @@ def process_stat(cluster, stat):
     Convert Isilon stat query result to InfluxDB point and send to the
     InfluxDB service. Organize the measurements by cluster and node via tags.
     """
-    # Process stat and then write points if list is large enough.
+    # Process stat(s) and then write points if list is large enough.
     tags = {"cluster": cluster}
     if stat.devid != 0:
         tags["node"] = stat.devid
 
-    influxdb_point = \
-            _influxdb_point_from_stat(
+    influxdb_points = \
+            _influxdb_points_from_stat(
                     stat.time, tags, stat.key, stat.value)
-
-    if influxdb_point is not None and len(influxdb_point["fields"]) > 0:
-        g_state.influxdb_points.append(influxdb_point)
-        num_points = len(g_state.influxdb_points)
-        if num_points > MAX_POINTS_PER_WRITE:
-            g_state.points_written += \
-                    _write_points(g_state.influxdb_points, num_points)
-            g_state.influxdb_points = []
+    if influxdb_points == []:
+        return
+    for influxdb_point in influxdb_points:
+        if len(influxdb_point["fields"]) > 0:
+            g_state.influxdb_points.append(influxdb_point)
+            num_points = len(g_state.influxdb_points)
+            if num_points > MAX_POINTS_PER_WRITE:
+                g_state.points_written += \
+                        _write_points(g_state.influxdb_points, num_points)
+                g_state.influxdb_points = []
 
 
 def end_process(cluster):
@@ -181,6 +183,35 @@ def _process_stat_list(stat_value, fields, tags, prefix=""):
                 _add_field(fields, item_name, list_value, value_type)
 
 
+def _influxdb_points_from_stat(stat_time, tags, stat_key, stat_value):
+    """
+    Create InfluxDB points/measurements from the stat query result.
+    """
+    points = []
+    fields = []
+    stat_value_type = type(stat_value)
+    if stat_value_type == list:
+        for stat in stat_value:
+            (fields, point_tags) = _influxdb_point_from_stat(
+                stat_time, tags, stat_key, stat)
+            points.append(
+                _build_influxdb_point(
+                    stat_time, point_tags, stat_key, fields))
+    elif stat_value_type == dict:
+        point_tags = tags.copy()
+        _process_stat_dict(stat_value, fields, point_tags)
+        points.append(
+            _build_influxdb_point(
+                stat_time, point_tags, stat_key, fields))
+    else:
+        if stat_value == "":
+            return None # InfluxDB does not like empty string stats
+        _add_field(fields, "value", stat_value, stat_value_type)
+        points.append(
+            _build_influxdb_point(
+                stat_time, tags.copy(), stat_key, fields))
+    return points
+
 def _influxdb_point_from_stat(stat_time, tags, stat_key, stat_value):
     """
     Create InfluxDB points/measurements from the stat query result.
@@ -196,7 +227,7 @@ def _influxdb_point_from_stat(stat_time, tags, stat_key, stat_value):
         if stat_value == "":
             return None # InfluxDB does not like empty string stats
         _add_field(fields, "value", stat_value, stat_value_type)
-    return _build_influxdb_point(stat_time, point_tags, stat_key, fields)
+    return (fields, point_tags)
 
 
 def _build_influxdb_point(unix_ts_secs, tags, measurement, fields):
