@@ -1,3 +1,6 @@
+import gevent
+import gevent.pool
+
 from daemons.prefab import run
 from ast import literal_eval
 import logging
@@ -7,6 +10,7 @@ import urllib3.exceptions
 
 from isi_stats_client import IsiStatsClient
 
+MAX_ASYNC_QUERIES = 20
 
 LOG = logging.getLogger(__name__)
 
@@ -448,6 +452,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         self._stats_processor = None
         self._stats_processor_args = None
         self._process_stats_func = None
+        self.async_worker_pool = gevent.pool.Pool(MAX_ASYNC_QUERIES)
 
 
     def set_stats_processor(self, stats_processor, processor_args):
@@ -569,7 +574,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         """
         Stops the stats processor prior to stopping the daemon.
         """
-        LOG.info("Stoppping.")
+        LOG.info("Stopping.")
         if self._stats_processor is not None \
                 and hasattr(self._stats_processor, 'stop') is True:
             LOG.info("Stopping stats processor.")
@@ -631,54 +636,62 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         for cluster, (stats,
                 composite_stats, eq_stats,
                 pct_change_stats, final_eq_stats) in cluster_stats.iteritems():
-            LOG.debug("Querying cluster %s %f", cluster.name, cluster.version)
-            LOG.debug("Querying stats %d.", len(stats))
-            stats_client = \
-                    IsiStatsClient(
-                            cluster.isi_sdk.StatisticsApi(cluster.api_client))
-            # query the current cluster with the current set of stats
-            try:
-                if cluster.version >= 8.0:
-                    results = stats_client.query_stats(stats)
-                else:
-                    results = \
-                            self._v7_2_stat_query_result_generator(
-                                    stats, stats_client)
-            except (urllib3.exceptions.HTTPError,
-                    cluster.isi_sdk.rest.ApiException) as http_exc:
-                LOG.error("Failed to query stats from cluster %s, exception "\
-                          "raised: %s", cluster.name, str(http_exc))
-                continue
-            except Exception as gen_exc:
-                # if in debug mode then re-raise general Exceptions because
-                # they are most likely bugs in the code, but in non-debug mode
-                # just continue
-                if debug is False:
-                    LOG.error("Failed to query stats from cluster %s, exception "\
-                              "raised: %s", cluster.name, str(gen_exc))
-                    continue
-                else:
-                    raise gen_exc
+            self.async_worker_pool.spawn(
+                    self._query_and_process_stats1, cluster, stats,
+                    composite_stats, eq_stats,
+                    pct_change_stats, final_eq_stats)
+        self.async_worker_pool.join()
 
-            composite_stats_processor = \
-                    DerivedStatsProcessor(composite_stats)
-            equation_stats_processor = \
-                    DerivedStatsProcessor(eq_stats)
-            pct_change_stats_processor = \
-                    DerivedStatsProcessor(pct_change_stats)
-            final_equation_stats_processor = \
-                    DerivedStatsProcessor(final_eq_stats)
-            derived_stats_processors = \
-                    (composite_stats_processor,
-                            equation_stats_processor,
-                            pct_change_stats_processor,
-                            final_equation_stats_processor)
-            # calls either _process_all_stats or
-            # _process_stats_with_derived_stats depending on whether or not the
-            # _stats_processor has a process_stat function or just a process
-            # function. The latter requires the process_stat function.
-            self._process_stats_func(
-                    cluster.name, results, derived_stats_processors)
+    def _query_and_process_stats1(self, cluster, stats, composite_stats,
+            eq_stats, pct_change_stats, final_eq_stats):
+        LOG.debug("Querying cluster %s %f", cluster.name, cluster.version)
+        LOG.debug("Querying stats %d.", len(stats))
+        stats_client = \
+                IsiStatsClient(
+                        cluster.isi_sdk.StatisticsApi(cluster.api_client))
+        # query the current cluster with the current set of stats
+        try:
+            if cluster.version >= 8.0:
+                results = stats_client.query_stats(stats)
+            else:
+                results = \
+                        self._v7_2_stat_query_result_generator(
+                                stats, stats_client)
+        except (urllib3.exceptions.HTTPError,
+                cluster.isi_sdk.rest.ApiException) as http_exc:
+            LOG.error("Failed to query stats from cluster %s, exception "\
+                      "raised: %s", cluster.name, str(http_exc))
+            return
+        except Exception as gen_exc:
+            # if in debug mode then re-raise general Exceptions because
+            # they are most likely bugs in the code, but in non-debug mode
+            # just continue
+            if debug is False:
+                LOG.error("Failed to query stats from cluster %s, exception "\
+                          "raised: %s", cluster.name, str(gen_exc))
+                return
+            else:
+                raise gen_exc
+
+        composite_stats_processor = \
+                DerivedStatsProcessor(composite_stats)
+        equation_stats_processor = \
+                DerivedStatsProcessor(eq_stats)
+        pct_change_stats_processor = \
+                DerivedStatsProcessor(pct_change_stats)
+        final_equation_stats_processor = \
+                DerivedStatsProcessor(final_eq_stats)
+        derived_stats_processors = \
+                (composite_stats_processor,
+                        equation_stats_processor,
+                        pct_change_stats_processor,
+                        final_equation_stats_processor)
+        # calls either _process_all_stats or
+        # _process_stats_with_derived_stats depending on whether or not the
+        # _stats_processor has a process_stat function or just a process
+        # function. The latter requires the process_stat function.
+        self._process_stats_func(
+                cluster.name, results, derived_stats_processors)
 
 
     def _v7_2_stat_query_result_generator(self, stats, stats_client):
