@@ -655,7 +655,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                 results = stats_client.query_stats(stats)
             else:
                 results = \
-                        self._v7_2_stat_query_result_generator(
+                        self._v7_2_multistat_query(
                                 stats, stats_client)
         except (urllib3.exceptions.HTTPError,
                 cluster.isi_sdk.rest.ApiException) as http_exc:
@@ -694,10 +694,11 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                 cluster.name, results, derived_stats_processors)
 
 
-    def _v7_2_stat_query_result_generator(self, stats, stats_client):
+    def _v7_2_multistat_query(self, stats, stats_client):
+        result = []
         for stat in stats:
-            result = stats_client.query_stat(stat)
-            yield result[0]
+            result.extend(stats_client.query_stat(stat))
+        return result
 
 
     def _process_all_stats(self, *args):
