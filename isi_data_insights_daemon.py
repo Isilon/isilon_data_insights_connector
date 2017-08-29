@@ -112,10 +112,18 @@ class DerivedStatComputer(object):
                 self.error_code = \
                         None if error is None else 1
 
+        avg_timestamp = 0
+        if error is not None:
+            try:
+                avg_timestamp = self._get_timestamp_avg(devid)
+            except ZeroDivisionError:
+                error = "Caught ZeroDivisionError from _get_timestamp_avg " \
+                        "for stat %s on node %s." \
+                        % (self.out_stat_name, str(devid))
 
         return DerivedStat(
                 self.out_stat_name, value, devid,
-                self._get_timestamp_avg(devid), error)
+                avg_timestamp, error)
 
 
     def _get_timestamp_avg(self, devid):
