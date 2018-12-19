@@ -42,18 +42,18 @@ def start(argv):
     influxdb_host = argv[0]
     influxdb_port = int(argv[1])
     influxdb_name = argv[2]
+    influxdb_ssl = False
+    influxdb_verifyssl = False
+
     if len(argv) > 3:
         if argv[3] == "auth":
             influxdb_username = raw_input("InfluxDB username: ")
             influxdb_password = getpass.getpass("Password: ")
         else:
-            print >> sys.stderr, "Invalid args provided to %s: %s "\
-                    "(expected: 'auth', got: '%s')" % (__name__, str(argv),
-                            argv[3])
-            sys.exit(1)
-    else:
-        influxdb_username = "root"
-        influxdb_password = "root"
+            influxdb_username = argv[3]
+            influxdb_password = argv[4]
+            influxdb_ssl = argv[5]
+            influxdb_verifyssl = argv[6]
 
     LOG.info("Connecting to: %s@%s:%d database:%s.",
             influxdb_username, influxdb_host, influxdb_port, influxdb_name)
@@ -62,7 +62,9 @@ def start(argv):
     g_client = InfluxDBClient(host=influxdb_host, port=influxdb_port,
                               database=influxdb_name,
                               username=influxdb_username,
-                              password=influxdb_password)
+                              password=influxdb_password,
+                              ssl=influxdb_ssl,
+                              verify_ssl=influxdb_verifyssl)
 
     create_database = True
     try:
