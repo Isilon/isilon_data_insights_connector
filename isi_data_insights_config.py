@@ -740,7 +740,7 @@ def configure_args_via_file(args):
     config_file = None
     if args.config_file is not None:
         try:
-            config_file = ConfigParser.ConfigParser()
+            config_file = ConfigParser.RawConfigParser()
             with open(args.config_file, "r") as cfg_fp:
                 config_file.readfp(cfg_fp)
         except Exception as exc:
