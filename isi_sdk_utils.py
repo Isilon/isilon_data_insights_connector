@@ -17,12 +17,7 @@ except ImportError:
 import sys
 
 
-def configure(
-        host,
-        username,
-        password,
-        verify_ssl=False,
-        use_version="detect"):
+def configure(host, username, password, verify_ssl=False, use_version="detect"):
     """
     Get a version specific instance of the isi_sdk and a multi-thread/client
     safe instance of IsiApiClient that can be used to interface with the
@@ -52,8 +47,7 @@ def configure(
     host_url = "https://" + host + ":8080"
 
     if use_version is None or use_version is "detect":
-        host_version = \
-                _detect_host_version(host_url, username, password, verify_ssl)
+        host_version = _detect_host_version(host_url, username, password, verify_ssl)
     else:
         host_version = use_version
 
@@ -81,8 +75,11 @@ def configure(
 def _detect_host_version(host, username, password, verify_ssl):
     # if 7.2 is available then use it to check the version of the cluster
     # because it will work for 7.2 or newer clusters.
-    isi_sdk, api_client_class = (isi_sdk_7_2, IsiApiClient_7_2) \
-            if isi_sdk_7_2 else (isi_sdk_8_0, IsiApiClient_8_0)
+    isi_sdk, api_client_class = (
+        (isi_sdk_7_2, IsiApiClient_7_2)
+        if isi_sdk_7_2
+        else (isi_sdk_8_0, IsiApiClient_8_0)
+    )
 
     api_client = api_client_class(host, verify_ssl)
     api_client.configure_basic_auth(username, password)
@@ -90,8 +87,9 @@ def _detect_host_version(host, username, password, verify_ssl):
     try:
         try:
             config = isi_sdk.ClusterApi(api_client).get_cluster_config()
-            host_version = 7.2 if config.onefs_version.release.startswith("v7.") \
-                    else 8.0
+            host_version = (
+                7.2 if config.onefs_version.release.startswith("v7.") else 8.0
+            )
         except isi_sdk.rest.ApiException as api_exc:
             # if we are using isi_sdk_8_0 (because 7.2 is not installed) and the
             # cluster is a 7.2 cluster then it will return 404 for the
@@ -102,15 +100,15 @@ def _detect_host_version(host, username, password, verify_ssl):
             else:
                 raise api_exc
     except Exception as exc:
-        raise RuntimeError("Failed to get cluster config for cluster %s " \
-                "using SDK %s. Error: %s" % (host, isi_sdk.__name__, str(exc)))
+        raise RuntimeError(
+            "Failed to get cluster config for cluster %s "
+            "using SDK %s. Error: %s" % (host, isi_sdk.__name__, str(exc))
+        )
 
     if host_version == 7.2 and isi_sdk_7_2 is None:
-        print >> sys.stderr, "Detected version 7 host, but version 7.2 SDK " \
-                "is not installed, will use 8.0 SDK instead."
+        print >>sys.stderr, "Detected version 7 host, but version 7.2 SDK " "is not installed, will use 8.0 SDK instead."
 
     if host_version == 8.0 and isi_sdk_8_0 is None:
-        print >> sys.stderr, "Detected version 8 host, but version 8.0 SDK " \
-                "is not installed, will use 7.2 SDK instead."
+        print >>sys.stderr, "Detected version 8 host, but version 8.0 SDK " "is not installed, will use 7.2 SDK instead."
 
     return host_version

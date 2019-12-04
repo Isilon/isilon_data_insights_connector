@@ -13,10 +13,10 @@ class StatsProcessorState(object):
         self.points_written = None
         self.reset()
 
-
     def reset(self):
         self.influxdb_points = []
         self.points_written = 0
+
 
 # influxdb_plugin state
 g_state = StatsProcessorState()
@@ -47,30 +47,43 @@ def start(argv):
             influxdb_username = raw_input("InfluxDB username: ")
             influxdb_password = getpass.getpass("Password: ")
         else:
-            print >> sys.stderr, "Invalid args provided to %s: %s "\
-                    "(expected: 'auth', got: '%s')" % (__name__, str(argv),
-                            argv[3])
+            print >>sys.stderr, "Invalid args provided to %s: %s " "(expected: 'auth', got: '%s')" % (
+                __name__,
+                str(argv),
+                argv[3],
+            )
             sys.exit(1)
     else:
         influxdb_username = "root"
         influxdb_password = "root"
 
-    LOG.info("Connecting to: %s@%s:%d database:%s.",
-            influxdb_username, influxdb_host, influxdb_port, influxdb_name)
+    LOG.info(
+        "Connecting to: %s@%s:%d database:%s.",
+        influxdb_username,
+        influxdb_host,
+        influxdb_port,
+        influxdb_name,
+    )
 
     global g_client
-    g_client = InfluxDBClient(host=influxdb_host, port=influxdb_port,
-                              database=influxdb_name,
-                              username=influxdb_username,
-                              password=influxdb_password)
+    g_client = InfluxDBClient(
+        host=influxdb_host,
+        port=influxdb_port,
+        database=influxdb_name,
+        username=influxdb_username,
+        password=influxdb_password,
+    )
 
     create_database = True
     try:
         databases = g_client.get_list_database()
     except (requests.exceptions.ConnectionError, InfluxDBClientError) as exc:
-        print >> sys.stderr, "Failed to connect to InfluxDB server at %s:%s "\
-                "database: %s.\nERROR: %s" % (influxdb_host,
-                        str(influxdb_port), influxdb_name, str(exc))
+        print >>sys.stderr, "Failed to connect to InfluxDB server at %s:%s " "database: %s.\nERROR: %s" % (
+            influxdb_host,
+            str(influxdb_port),
+            influxdb_name,
+            str(exc),
+        )
         sys.exit(1)
 
     for database in databases:
@@ -97,9 +110,7 @@ def process_stat(cluster, stat):
     if stat.devid != 0:
         tags["node"] = stat.devid
 
-    influxdb_points = \
-            _influxdb_points_from_stat(
-                    stat.time, tags, stat.key, stat.value)
+    influxdb_points = _influxdb_points_from_stat(stat.time, tags, stat.key, stat.value)
     if influxdb_points == []:
         return
     for influxdb_point in influxdb_points:
@@ -107,8 +118,9 @@ def process_stat(cluster, stat):
             g_state.influxdb_points.append(influxdb_point)
             num_points = len(g_state.influxdb_points)
             if num_points > MAX_POINTS_PER_WRITE:
-                g_state.points_written += \
-                        _write_points(g_state.influxdb_points, num_points)
+                g_state.points_written += _write_points(
+                    g_state.influxdb_points, num_points
+                )
                 g_state.influxdb_points = []
 
 
@@ -116,10 +128,10 @@ def end_process(cluster):
     # send left over points to influxdb
     num_points = len(g_state.influxdb_points)
     if num_points > 0:
-        g_state.points_written += \
-                _write_points(g_state.influxdb_points, num_points)
-    LOG.debug("Done processing %s stats, wrote %d points.",
-            cluster, g_state.points_written)
+        g_state.points_written += _write_points(g_state.influxdb_points, num_points)
+    LOG.debug(
+        "Done processing %s stats, wrote %d points.", cluster, g_state.points_written
+    )
     g_state.reset()
 
 
@@ -147,8 +159,9 @@ def _process_stat_dict(stat_value, fields, tags, prefix=""):
     for key, value in stat_value.iteritems():
         value_type = type(value)
         field_name = prefix + key
-        if (value_type == str or value_type == unicode) \
-                or (key[-2:] == "id" and value_type == int):
+        if (value_type == str or value_type == unicode) or (
+            key[-2:] == "id" and value_type == int
+        ):
             tags[field_name] = value
         elif value_type == list:
             list_prefix = field_name + SUB_KEY_SEPARATOR
@@ -193,24 +206,22 @@ def _influxdb_points_from_stat(stat_time, tags, stat_key, stat_value):
     if stat_value_type == list:
         for stat in stat_value:
             (fields, point_tags) = _influxdb_point_from_stat(
-                stat_time, tags, stat_key, stat)
+                stat_time, tags, stat_key, stat
+            )
             points.append(
-                _build_influxdb_point(
-                    stat_time, point_tags, stat_key, fields))
+                _build_influxdb_point(stat_time, point_tags, stat_key, fields)
+            )
     elif stat_value_type == dict:
         point_tags = tags.copy()
         _process_stat_dict(stat_value, fields, point_tags)
-        points.append(
-            _build_influxdb_point(
-                stat_time, point_tags, stat_key, fields))
+        points.append(_build_influxdb_point(stat_time, point_tags, stat_key, fields))
     else:
         if stat_value == "":
-            return None # InfluxDB does not like empty string stats
+            return None  # InfluxDB does not like empty string stats
         _add_field(fields, "value", stat_value, stat_value_type)
-        points.append(
-            _build_influxdb_point(
-                stat_time, tags.copy(), stat_key, fields))
+        points.append(_build_influxdb_point(stat_time, tags.copy(), stat_key, fields))
     return points
+
 
 def _influxdb_point_from_stat(stat_time, tags, stat_key, stat_value):
     """
@@ -225,7 +236,7 @@ def _influxdb_point_from_stat(stat_time, tags, stat_key, stat_value):
         _process_stat_list(stat_value, fields, point_tags)
     else:
         if stat_value == "":
-            return None # InfluxDB does not like empty string stats
+            return None  # InfluxDB does not like empty string stats
         _add_field(fields, "value", stat_value, stat_value_type)
     return (fields, point_tags)
 
@@ -234,12 +245,13 @@ def _build_influxdb_point(unix_ts_secs, tags, measurement, fields):
     """
     Build the json for an InfluxDB data point.
     """
-    timestamp_ns = unix_ts_secs * 1000000000 # convert to nanoseconds
+    timestamp_ns = unix_ts_secs * 1000000000  # convert to nanoseconds
     point_json = {
-            "measurement": measurement,
-            "tags": tags,
-            "time": timestamp_ns,
-            "fields": {}}
+        "measurement": measurement,
+        "tags": tags,
+        "time": timestamp_ns,
+        "fields": {},
+    }
 
     for field_name, field_value in fields:
         point_json["fields"][field_name] = field_value
@@ -270,16 +282,23 @@ def _write_points(points, num_points):
             g_client.write_points(write_points)
             points_written += len(write_points)
         except InfluxDBServerError as svr_exc:
-            LOG.error("InfluxDBServerError: %s\nFailed to write points: %s",
-                    str(svr_exc), _get_point_names(write_points))
+            LOG.error(
+                "InfluxDBServerError: %s\nFailed to write points: %s",
+                str(svr_exc),
+                _get_point_names(write_points),
+            )
         except InfluxDBClientError as client_exc:
-            LOG.error("InfluxDBClientError writing points: %s\n"\
-                    "Error: %s", _get_point_names(write_points),
-                    str(client_exc))
+            LOG.error(
+                "InfluxDBClientError writing points: %s\n" "Error: %s",
+                _get_point_names(write_points),
+                str(client_exc),
+            )
         except requests.exceptions.ConnectionError as req_exc:
-            LOG.error("ConnectionError exception caught writing points: %s\n"\
-                    "Error: %s", _get_point_names(write_points),
-                    str(req_exc))
+            LOG.error(
+                "ConnectionError exception caught writing points: %s\n" "Error: %s",
+                _get_point_names(write_points),
+                str(req_exc),
+            )
         write_index += MAX_POINTS_PER_WRITE
 
     return points_written
