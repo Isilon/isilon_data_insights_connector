@@ -13,6 +13,7 @@ class IsiApiClient_7_2(isi_sdk_7_2.ApiClient, isi_api_client.IsiApiClient):
     authenticate with a different Isilon cluster. This version will work
     for that situation.
     """
+
     def __init__(self, host, verify_ssl):
         # unfortunately there's no way to make the verify_ssl configuration
         # work in a multi-thread/client safe way (at least not with the current
@@ -20,14 +21,12 @@ class IsiApiClient_7_2(isi_sdk_7_2.ApiClient, isi_api_client.IsiApiClient):
         isi_sdk_7_2.configuration.verify_ssl = verify_ssl
         super(IsiApiClient_7_2, self).__init__(host=host)
 
-
     def update_params_for_auth(self, headers, querys, auth_settings):
         """
         Overrides the isi_sdk_7_2.ApiClient's version of this function by using
         self._username and self._password for BasicAuth instead of
         isi_sdk.Configuration().username and isi_sdk.Configuration().password.
         """
-        headers["Authorization"] = \
-                urllib3.util.make_headers(
-                        basic_auth=self._username + ":" \
-                                + self._password).get("authorization")
+        headers["Authorization"] = urllib3.util.make_headers(
+            basic_auth=self._username + ":" + self._password
+        ).get("authorization")

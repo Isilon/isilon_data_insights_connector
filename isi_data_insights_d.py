@@ -5,14 +5,19 @@
 # The documentation for monkey explicitly requires patching to be
 # performed as early as possible BEFORE other imports
 from gevent import monkey
+
 monkey.patch_all()  # noqa
 
 import sys
 
-from isi_data_insights_config import parse_cli, \
-        configure_args_via_file, process_pid_file_arg, \
-        configure_logging_via_cli, configure_via_cli, \
-        configure_via_file
+from isi_data_insights_config import (
+    parse_cli,
+    configure_args_via_file,
+    process_pid_file_arg,
+    configure_logging_via_cli,
+    configure_via_cli,
+    configure_via_file,
+)
 from isi_data_insights_daemon import IsiDataInsightsDaemon
 
 
@@ -30,15 +35,13 @@ def main():
 
     # before we do the long process of configuring, lets make sure we have
     # a valid pid to do a stop or restart with
-    if (args.action == "restart" or args.action == "stop") \
-            and daemon.pid is None:
-        print >> sys.stderr, "Cannot " + args.action + " daemon, " \
-                "invalid pid in file: " + str(pid_file_path)
+    if (args.action == "restart" or args.action == "stop") and daemon.pid is None:
+        print >> sys.stderr, "Cannot " + args.action + " daemon, " "invalid pid in file: " + str(
+            pid_file_path
+        )
         sys.exit(1)
 
-    if args.action == "start" \
-            or args.action == "debug" \
-            or args.action == "restart":
+    if args.action == "start" or args.action == "debug" or args.action == "restart":
         configure_logging_via_cli(args)
 
         if config_file is not None:
@@ -57,8 +60,7 @@ def main():
         print "Stopping daemon with pid " + str(daemon.pid)
         daemon.stop()
     else:
-        print >> sys.stderr, "Invalid action arg: '%s', must be one of "\
-                "'start', 'stop', or 'restart'." % args.action
+        print >> sys.stderr, "Invalid action arg: '%s', must be one of " "'start', 'stop', or 'restart'." % args.action
 
 
 if __name__ == "__main__":

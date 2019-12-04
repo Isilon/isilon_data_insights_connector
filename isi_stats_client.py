@@ -19,6 +19,7 @@ class IsiStatsClient(object):
     Handles the details of querying for Isilon cluster statistics values and
     metadata using the Isilon SDK.
     """
+
     def __init__(self, stats_api):
         """
         Setup the Isilon SDK to query the specified cluster's statistics.
@@ -28,10 +29,15 @@ class IsiStatsClient(object):
         # get the Statistics API
         self._stats_api = stats_api
 
-
-    def query_stats(self,
-            stats, devid="all", substr=False,
-            timeout=60, degraded=True, expand_clientid=False):
+    def query_stats(
+        self,
+        stats,
+        devid="all",
+        substr=False,
+        timeout=60,
+        degraded=True,
+        expand_clientid=False,
+    ):
         """
         Queries the cluster for a list of stat values. Note: this function only
         works on OneFS 8.0 or newer.
@@ -58,9 +64,9 @@ class IsiStatsClient(object):
             if stat_keys_len - stat_index > MAX_KEYS_LEN:
                 # find the last comma between stat_index and
                 # stat_index + MAX_KEYS_LEN
-                next_stat_index = \
-                        stat_keys.rfind(',', stat_index,
-                                stat_index + MAX_KEYS_LEN)
+                next_stat_index = stat_keys.rfind(
+                    ",", stat_index, stat_index + MAX_KEYS_LEN
+                )
                 # unless there's a key that is longer than MAX_KEYS_LEN
                 # then the rfind should never return -1 because there should
                 # definitely be at least one comma.
@@ -70,14 +76,14 @@ class IsiStatsClient(object):
                 query_keys = stat_keys[stat_index:]
                 stat_index = stat_keys_len
 
-            query_result = \
-                    self._stats_api.get_statistics_current(
-                            keys=query_keys,
-                            devid=devid,
-                            substr=substr,
-                            degraded=degraded,
-                            expand_clientid=expand_clientid,
-                            timeout=timeout)
+            query_result = self._stats_api.get_statistics_current(
+                keys=query_keys,
+                devid=devid,
+                substr=substr,
+                degraded=degraded,
+                expand_clientid=expand_clientid,
+                timeout=timeout,
+            )
 
             if combined_query_results is None:
                 combined_query_results = query_result
@@ -88,8 +94,9 @@ class IsiStatsClient(object):
         # fields on the query_results data model).
         return combined_query_results.stats
 
-    def query_stat(self,
-        stat, devid="all", timeout=60, degraded=True, expand_clientid=False):
+    def query_stat(
+        self, stat, devid="all", timeout=60, degraded=True, expand_clientid=False
+    ):
         """
         Queries the cluster for a single stat's value. Note: this function
         works on OneFS 7.2 or newer clusters.
@@ -103,16 +110,15 @@ class IsiStatsClient(object):
         client addresses and other IDs.
         :returns: an instance of isi_sdk.models.StatisticsCurrentStat
         """
-        query_result = \
-                self._stats_api.get_statistics_current(
-                        key=stat,
-                        devid=devid,
-                        degraded=degraded,
-                        expand_clientid=expand_clientid,
-                        timeout=timeout)
+        query_result = self._stats_api.get_statistics_current(
+            key=stat,
+            devid=devid,
+            degraded=degraded,
+            expand_clientid=expand_clientid,
+            timeout=timeout,
+        )
 
         return query_result.stats
-
 
     def get_stats_metadata(self, stats=None):
         """
@@ -126,18 +132,14 @@ class IsiStatsClient(object):
             return self._get_metadata_direct(stats)
         return self._get_metadata_indirect(stats)
 
-
     def get_stat_metadata(self, stat):
         """
         Query the cluster for the metadata of a specific stat.
         :param string stat: the name of the stat to query
         :returns: a single isi_sdk.models.StatisticsKey.
         """
-        result = \
-                self._stats_api.get_statistics_key(
-                        statistics_key_id=stat)
+        result = self._stats_api.get_statistics_key(statistics_key_id=stat)
         return result.keys[0]
-
 
     def _get_metadata_indirect(self, stats):
         """
@@ -157,8 +159,7 @@ class IsiStatsClient(object):
             result_list = []
         query_args = dict()
         while True:
-            results = \
-                    self._stats_api.get_statistics_keys(**query_args)
+            results = self._stats_api.get_statistics_keys(**query_args)
             if stats is None:
                 if result_list is None:
                     result_list = results.keys
@@ -181,7 +182,6 @@ class IsiStatsClient(object):
             query_args["resume"] = resume
 
         return result_list
-
 
     def _get_metadata_direct(self, stats):
         """
