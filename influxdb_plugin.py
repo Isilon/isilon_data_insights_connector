@@ -1,4 +1,8 @@
 from __future__ import print_function
+from builtins import input
+from builtins import str
+from builtins import range
+from builtins import object
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBServerError, InfluxDBClientError
 
@@ -45,7 +49,7 @@ def start(argv):
     influxdb_name = argv[2]
     if len(argv) > 3:
         if argv[3] == "auth":
-            influxdb_username = raw_input("InfluxDB username: ")
+            influxdb_username = input("InfluxDB username: ")
             influxdb_password = getpass.getpass("Password: ")
         else:
             print(
@@ -137,7 +141,7 @@ def end_process(cluster):
 
 
 def _add_field(fields, field_name, field_value, field_value_type):
-    if field_value_type == long or field_value_type == int:
+    if field_value_type == int:
         # convert integers to float because InfluxDB only supports 64 bit
         # signed integers, so doing this prevents an "out of range" error when
         # inserting values that are unsigned 64 bit integers.
@@ -157,12 +161,10 @@ def _process_stat_dict(stat_value, fields, tags, prefix=""):
     used for the "fields" parameter of the InfluxDB point.
     Any string or keys with "id" on the end of their name get turned into tags.
     """
-    for key, value in stat_value.iteritems():
+    for key, value in stat_value.items():
         value_type = type(value)
         field_name = prefix + key
-        if (value_type == str or value_type == unicode) or (
-            key[-2:] == "id" and value_type == int
-        ):
+        if (value_type == str) or (key[-2:] == "id" and value_type == int):
             tags[field_name] = value
         elif value_type == list:
             list_prefix = field_name + SUB_KEY_SEPARATOR

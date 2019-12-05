@@ -3,6 +3,7 @@ Handle the details of building a Swagger client with the correct version of the
 SDK to talk to a specific Isilon host.
 """
 from __future__ import print_function
+from builtins import str
 
 try:
     import isi_sdk_8_0
