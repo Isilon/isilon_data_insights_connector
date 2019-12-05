@@ -2,6 +2,7 @@
 This file contains utility functions for configuring the IsiDataInsightsDaemon
 via command line args and config file.
 """
+from __future__ import print_function
 import argparse
 import ConfigParser
 import getpass
@@ -74,9 +75,11 @@ def _process_config_file_clusters(clusters):
         if len(at_split) == 2:
             user_pass_split = at_split[0].split(":", 1)
             if len(user_pass_split) != 2:
-                print >> sys.stderr, "Config file contains invalid cluster " "config: %s in %s (expected <username>:<password> " "prefix)." % (
-                    cluster_config,
-                    clusters,
+                print(
+                    "Config file contains invalid cluster "
+                    "config: %s in %s (expected <username>:<password> "
+                    "prefix)." % (cluster_config, clusters),
+                    file=sys.stderr,
                 )
                 sys.exit(1)
             username = user_pass_split[0]
@@ -100,8 +103,10 @@ def _process_config_file_clusters(clusters):
                 if type(verify_ssl) != bool:
                     raise Exception
             except Exception:
-                print >> sys.stderr, "Config file contains invalid cluster " "config: %s (expected True or False on end)" % (
-                    cluster_config
+                print(
+                    "Config file contains invalid cluster "
+                    "config: %s (expected True or False on end)" % cluster_config,
+                    file=sys.stderr,
                 )
                 sys.exit(1)
             cluster_address = verify_ssl_split[0]
@@ -167,15 +172,15 @@ def _build_cluster_configs(cluster_list):
                     cluster, username, password, verify_ssl
                 )
             except RuntimeError as exc:
-                print >> sys.stderr, "Failed to configure SDK for " "cluster %s. Exception raised: %s" % (
-                    cluster,
-                    str(exc),
+                print(
+                    "Failed to configure SDK for "
+                    "cluster %s. Exception raised: %s" % (cluster, str(exc)),
+                    file=sys.stderr,
                 )
                 sys.exit(1)
-            print "Configured %s as version %d cluster, using SDK %s." % (
-                cluster,
-                int(version),
-                isi_sdk.__name__,
+            print(
+                "Configured %s as version %d cluster, using SDK %s."
+                % (cluster, int(version), isi_sdk.__name__)
             )
             cluster_name = _query_cluster_name(cluster, isi_sdk, api_client)
             g_cluster_configs[cluster] = cluster_name, isi_sdk, api_client, version
@@ -297,8 +302,15 @@ def _configure_stat_groups_via_file(
         pass
 
     if len(cluster_list) == 0:
-        print >> sys.stderr, "The %s stat group has no clusters to query." % stat_group
-        print >> sys.stderr, "You must provide either a global list of " "clusters to query for all stat groups, or a per-stat-" "group list of clusters, or both."
+        print(
+            "The %s stat group has no clusters to query." % stat_group, file=sys.stderr
+        )
+        print(
+            "You must provide either a global list of "
+            "clusters to query for all stat groups, or a per-stat-"
+            "group list of clusters, or both.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     cluster_configs = _build_cluster_configs(cluster_list)
@@ -337,12 +349,13 @@ def _configure_stat_groups_via_file(
                 1 if update_interval_param == "*" else int(update_interval_param[1:])
             )
         except ValueError as exc:
-            print >> sys.stderr, "Failed to parse update interval multiplier " "from %s stat group.\nERROR: %s" % (
-                stat_group,
-                str(exc),
+            print(
+                "Failed to parse update interval multiplier "
+                "from %s stat group.\nERROR: %s" % (stat_group, str(exc)),
+                file=sys.stderr,
             )
             sys.exit(1)
-        print "Computing update intervals for stat group: %s." % stat_group
+        print("Computing update intervals for stat group: %s." % stat_group)
         _compute_stat_group_update_intervals(
             update_interval_multiplier, cluster_configs, stat_names, update_intervals
         )
@@ -350,9 +363,10 @@ def _configure_stat_groups_via_file(
         try:
             update_interval = int(update_interval_param)
         except ValueError as exc:
-            print >> sys.stderr, "Failed to parse update interval from %s " "stat group.\nERROR: %s" % (
-                stat_group,
-                str(exc),
+            print(
+                "Failed to parse update interval from %s "
+                "stat group.\nERROR: %s" % (stat_group, str(exc)),
+                file=sys.stderr,
             )
             sys.exit(1)
         update_intervals[update_interval] = (cluster_configs, stat_names)
@@ -399,10 +413,10 @@ def _parse_derived_stats(config_file, stat_group, derived_stats_name, parse_func
     try:
         derived_stats = parse_func(derived_stats_cfg)
     except RuntimeError as rterr:
-        print >> sys.stderr, "Failed to parse %s from %s " "section. %s" % (
-            derived_stats_name,
-            stat_group,
-            str(rterr),
+        print(
+            "Failed to parse %s from %s "
+            "section. %s" % (derived_stats_name, stat_group, str(rterr)),
+            file=sys.stderr,
         )
         sys.exit(1)
 
@@ -524,7 +538,11 @@ def _parse_pct_change_stats(pct_change_stats_cfg):
 
 def _configure_stat_groups_via_cli(daemon, args):
     if len(args.stat_groups) == 0:
-        print >> sys.stderr, "You must provide a set of stats to query via " "the --stats command line argument or a configuration file."
+        print(
+            "You must provide a set of stats to query via "
+            "the --stats command line argument or a configuration file.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     if not args.update_intervals:
@@ -535,13 +553,17 @@ def _configure_stat_groups_via_cli(daemon, args):
         args.update_intervals.append(MIN_UPDATE_INTERVAL)
 
     if len(args.stat_groups) != len(args.update_intervals):
-        print >> sys.stderr, "The number of update intervals must be the " + "same as the number of stat groups."
+        print(
+            "The number of update intervals must be the "
+            + "same as the number of stat groups.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     cluster_list = args.clusters.split(",")
     # if args.clusters is the empty string then 1st element will be empty
     if cluster_list[0] == "":
-        print >> sys.stderr, "Please provide at least one input cluster."
+        print("Please provide at least one input cluster.", file=sys.stderr)
         sys.exit(1)
 
     # remove duplicates
@@ -553,7 +575,7 @@ def _configure_stat_groups_via_cli(daemon, args):
         # split always results in at least one item, so check if the first
         # item is empty to validate the stats input arg
         if stats_list[0] == "":
-            print >> sys.stderr, "Please provide at least one stat name."
+            print("Please provide at least one stat name.", file=sys.stderr)
             sys.exit(1)
         update_interval = args.update_intervals[index]
         _configure_stat_group(daemon, update_interval, cluster_configs, stats_list)
@@ -563,16 +585,17 @@ def _configure_stats_processor(daemon, stats_processor, processor_args):
     try:
         processor = __import__(stats_processor, fromlist=[""])
     except ImportError:
-        print >> sys.stderr, "Unable to load stats processor: %s." % stats_processor
+        print("Unable to load stats processor: %s." % stats_processor, file=sys.stderr)
         sys.exit(1)
 
     try:
         arg_list = processor_args.split(" ") if processor_args != "" else []
         daemon.set_stats_processor(processor, arg_list)
     except AttributeError as exception:
-        print >> sys.stderr, "Failed to configure %s as stats processor. %s" % (
-            stats_processor,
-            str(exception),
+        print(
+            "Failed to configure %s as stats processor. %s"
+            % (stats_processor, str(exception)),
+            file=sys.stderr,
         )
         sys.exit(1)
 
@@ -589,7 +612,7 @@ def _log_level_str_to_enum(log_level):
     elif log_level.upper() == "CRITICAL":
         return logging.CRITICAL
     else:
-        print "Invalid logging level: " + log_level + ", setting to INFO."
+        print("Invalid logging level: " + log_level + ", setting to INFO.")
         return logging.INFO
 
 
@@ -615,7 +638,7 @@ def _print_stat_groups(daemon):
             % (str(stat_set.cluster_configs), update_interval, str(stat_set.stats))
         )
         # print it to stdout and the log file.
-        print msg
+        print(msg)
         LOG.debug(msg)
 
 
@@ -646,10 +669,11 @@ def configure_via_file(daemon, args, config_file):
                 config_file.get(MAIN_CFG_SEC, MIN_UPDATE_INTERVAL_OVERRIDE_PARAM)
             )
         except ValueError as exc:
-            print >> sys.stderr, "Failed to parse %s from %s " "section.\nERROR: %s" % (
-                MIN_UPDATE_INTERVAL_OVERRIDE_PARAM,
-                MAIN_CFG_SEC,
-                str(exc),
+            print(
+                "Failed to parse %s from %s "
+                "section.\nERROR: %s"
+                % (MIN_UPDATE_INTERVAL_OVERRIDE_PARAM, MAIN_CFG_SEC, str(exc)),
+                file=sys.stderr,
             )
             sys.exit(1)
 
@@ -684,7 +708,11 @@ def configure_via_file(daemon, args, config_file):
 
     # check that at least one stat group was added to the daemon.
     if daemon.get_stat_set_count() == 0:
-        print >> sys.stderr, "Please provide stat groups to query via " "command line args or via config file parameters."
+        print(
+            "Please provide stat groups to query via "
+            "command line args or via config file parameters.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     _print_stat_groups(daemon)
@@ -711,7 +739,7 @@ def configure_logging_via_cli(args):
 
         parent_dir = os.path.dirname(args.log_file)
         if parent_dir and os.path.exists(parent_dir) is False:
-            print >> sys.stderr, "Invalid log file path: %s." % (args.log_file)
+            print("Invalid log file path: %s." % (args.log_file), file=sys.stderr)
             sys.exit(1)
 
         if args.log_level is None:
@@ -744,9 +772,10 @@ def configure_args_via_file(args):
             with open(args.config_file, "r") as cfg_fp:
                 config_file.readfp(cfg_fp)
         except Exception as exc:
-            print >> sys.stderr, "Failed to parse config file: %s.\n" "ERROR:\n%s." % (
-                args.config_file,
-                str(exc),
+            print(
+                "Failed to parse config file: %s.\n"
+                "ERROR:\n%s." % (args.config_file, str(exc)),
+                file=sys.stderr,
             )
             sys.exit(1)
         _update_args_with_config_file(config_file, args)
@@ -763,14 +792,14 @@ def process_pid_file_arg(pid_file, action):
 
     parent_dir = os.path.dirname(pid_file)
     if parent_dir and os.path.exists(parent_dir) is False:
-        print >> sys.stderr, "Invalid pid file path: %s." % pid_file
+        print("Invalid pid file path: %s." % pid_file, file=sys.stderr)
         sys.exit(1)
 
     pid_file_path = os.path.abspath(pid_file)
     if (action == "stop" or action == "restart") and os.path.exists(
         pid_file_path
     ) is False:
-        print >> sys.stderr, "Invalid pid file path: %s." % pid_file
+        print("Invalid pid file path: %s." % pid_file, file=sys.stderr)
         sys.exit(1)
 
     return pid_file_path

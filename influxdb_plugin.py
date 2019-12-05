@@ -1,3 +1,4 @@
+from __future__ import print_function
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBServerError, InfluxDBClientError
 
@@ -47,10 +48,10 @@ def start(argv):
             influxdb_username = raw_input("InfluxDB username: ")
             influxdb_password = getpass.getpass("Password: ")
         else:
-            print >>sys.stderr, "Invalid args provided to %s: %s " "(expected: 'auth', got: '%s')" % (
-                __name__,
-                str(argv),
-                argv[3],
+            print(
+                "Invalid args provided to %s: %s "
+                "(expected: 'auth', got: '%s')" % (__name__, str(argv), argv[3]),
+                file=sys.stderr,
             )
             sys.exit(1)
     else:
@@ -78,11 +79,11 @@ def start(argv):
     try:
         databases = g_client.get_list_database()
     except (requests.exceptions.ConnectionError, InfluxDBClientError) as exc:
-        print >>sys.stderr, "Failed to connect to InfluxDB server at %s:%s " "database: %s.\nERROR: %s" % (
-            influxdb_host,
-            str(influxdb_port),
-            influxdb_name,
-            str(exc),
+        print(
+            "Failed to connect to InfluxDB server at %s:%s "
+            "database: %s.\nERROR: %s"
+            % (influxdb_host, str(influxdb_port), influxdb_name, str(exc)),
+            file=sys.stderr,
         )
         sys.exit(1)
 

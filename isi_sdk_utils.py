@@ -2,6 +2,8 @@
 Handle the details of building a Swagger client with the correct version of the
 SDK to talk to a specific Isilon host.
 """
+from __future__ import print_function
+
 try:
     import isi_sdk_8_0
 except ImportError:
@@ -104,9 +106,17 @@ def _detect_host_version(host, username, password, verify_ssl):
         )
 
     if host_version == 7.2 and isi_sdk_7_2 is None:
-        print >>sys.stderr, "Detected version 7 host, but version 7.2 SDK " "is not installed, will use 8.0 SDK instead."
+        print(
+            "Detected version 7 host, but version 7.2 SDK "
+            "is not installed, will use 8.0 SDK instead.",
+            file=sys.stderr,
+        )
 
     if host_version == 8.0 and isi_sdk_8_0 is None:
-        print >>sys.stderr, "Detected version 8 host, but version 8.0 SDK " "is not installed, will use 7.2 SDK instead."
+        print(
+            "Detected version 8 host, but version 8.0 SDK "
+            "is not installed, will use 7.2 SDK instead.",
+            file=sys.stderr,
+        )
 
     return host_version
