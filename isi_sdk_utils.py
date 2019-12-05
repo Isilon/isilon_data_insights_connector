@@ -4,13 +4,11 @@ SDK to talk to a specific Isilon host.
 """
 try:
     import isi_sdk_8_0
-    from isi_api_client_8_0 import IsiApiClient_8_0
 except ImportError:
     isi_sdk_8_0 = None
 
 try:
     import isi_sdk_7_2
-    from isi_api_client_7_2 import IsiApiClient_7_2
 except ImportError:
     isi_sdk_7_2 = None
 
@@ -47,27 +45,27 @@ def configure(host, username, password, verify_ssl=False, use_version="detect"):
     host_url = "https://" + host + ":8080"
 
     if use_version is None or use_version is "detect":
-        host_version = _detect_host_version(host_url, username, password, verify_ssl)
+        host_version = _detect_host_version(host, username, password, verify_ssl)
     else:
         host_version = use_version
 
     isi_sdk = None
-    api_client_class = None
     if host_version < 8.0 and isi_sdk_7_2 is not None:
         isi_sdk = isi_sdk_7_2
-        api_client_class = IsiApiClient_7_2
     elif host_version >= 8.0 and isi_sdk_8_0 is None:
         isi_sdk = isi_sdk_7_2
-        api_client_class = IsiApiClient_7_2
         # we detected a version 8.0 host, but have to treat it like a 7.2 host
         # because the 8.0 SDK is not installed
         host_version = 7.2
     else:
         isi_sdk = isi_sdk_8_0
-        api_client_class = IsiApiClient_8_0
 
-    api_client = api_client_class(host_url, verify_ssl)
-    api_client.configure_basic_auth(username, password)
+    configuration = isi_sdk.Configuration()
+    configuration.username = username
+    configuration.password = password
+    configuration.verify_ssl = verify_ssl
+    configuration.host = host_url
+    api_client = isi_sdk.ApiClient(configuration)
 
     return isi_sdk, api_client, host_version
 
@@ -75,14 +73,14 @@ def configure(host, username, password, verify_ssl=False, use_version="detect"):
 def _detect_host_version(host, username, password, verify_ssl):
     # if 7.2 is available then use it to check the version of the cluster
     # because it will work for 7.2 or newer clusters.
-    isi_sdk, api_client_class = (
-        (isi_sdk_7_2, IsiApiClient_7_2)
-        if isi_sdk_7_2
-        else (isi_sdk_8_0, IsiApiClient_8_0)
-    )
+    isi_sdk = isi_sdk_7_2 if isi_sdk_7_2 else isi_sdk_8_0
 
-    api_client = api_client_class(host, verify_ssl)
-    api_client.configure_basic_auth(username, password)
+    configuration = isi_sdk.Configuration()
+    configuration.username = username
+    configuration.password = password
+    configuration.verify_ssl = verify_ssl
+    configuration.host = "https://" + host + ":8080"
+    api_client = isi_sdk.ApiClient(configuration)
 
     try:
         try:
