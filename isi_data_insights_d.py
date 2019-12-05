@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
+# From __future_ imports have to be before everything.
+from __future__ import print_function
+
 # Have to do this before importing the other libs
 # The noqa comment prevents spurious E402 flake8 errors
 # The documentation for monkey explicitly requires patching to be
-# performed as early as possible BEFORE other imports
+# performed as early as possible BEFORE other imports but after the
+# from __future__ imports.
 from gevent import monkey
 
 monkey.patch_all()  # noqa
@@ -36,8 +40,10 @@ def main():
     # before we do the long process of configuring, lets make sure we have
     # a valid pid to do a stop or restart with
     if (args.action == "restart" or args.action == "stop") and daemon.pid is None:
-        print >> sys.stderr, "Cannot " + args.action + " daemon, " "invalid pid in file: " + str(
-            pid_file_path
+        print(
+            "Cannot " + args.action + " daemon, "
+            "invalid pid in file: " + str(pid_file_path),
+            file=sys.stderr,
         )
         sys.exit(1)
 
@@ -52,15 +58,19 @@ def main():
         if args.action == "start":
             daemon.start()
         elif args.action == "restart":
-            print "Restarting daemon with pid " + str(daemon.pid)
+            print("Restarting daemon with pid " + str(daemon.pid))
             daemon.restart()
         else:
             daemon.run(debug=True)
     elif args.action == "stop":
-        print "Stopping daemon with pid " + str(daemon.pid)
+        print("Stopping daemon with pid " + str(daemon.pid))
         daemon.stop()
     else:
-        print >> sys.stderr, "Invalid action arg: '%s', must be one of " "'start', 'stop', or 'restart'." % args.action
+        print(
+            "Invalid action arg: '%s', must be one of "
+            "'start', 'stop', or 'restart'." % args.action,
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":
