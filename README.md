@@ -1,5 +1,6 @@
 # Isilon Data Insights Connector
-The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon's Platform API (PAPI). It then has a pluggable module for processing the results of those queries. The provided stat processor, defined in influxdb_plugin.py, sends query results to an InfluxDB backend. Additionally, several Grafana dashboards are provided to make it easy to monitor the health and status of your Isilon clusters.
+The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon OneFS Platform API (PAPI). The collector uses a pluggable module for processing the results of those queries. The provided stats processor defined in influxdb_plugin.py sends query results to an InfluxDB backend. Additionally, several Grafana dashboards are provided to make it easy to monitor the health and status of your Isilon clusters.
+The Connector now supports running under either Python 2 or Python 3.
 
 # Installation Instructions
 For detailed instructions on setting up a VM and installing the Connector on the VM refer to:
@@ -8,28 +9,31 @@ https://community.emc.com/blogs/keith/2017/01/26/isilon-data-insights-connector-
 
 For a bit less detail, perhaps quicker setup, refer to the instructions below.
 
-There are three ways to install the Connector. The local installation simply installs the required Python dependencies on the local system. The virtual environment installation installs the required Python dependencies in what's known as a Python Virtual Environment (see http://docs.python-guide.org/en/latest/dev/virtualenvs/). In both cases the Connector is designed to run directly from the source directory.
+It is dangerous and unnecessary to install Python packages as root (sudo pip ...). The data insights collector needs no special privileges and can be installed and run as an unprivileged user. Because of this, the recommended way to install the Connector is via a Python virtual environment. The virtual environment installation installs the required Python dependencies into a Python Virtual Environment (see http://docs.python-guide.org/en/latest/dev/virtualenvs/). The Connector is then run directly from the source directory.
 
-# Local Installation Instructions
-* sudo pip install -r requirements.txt
-
-# Virtual Environment Installation Instructions
-* To install the connector in a virtual environment run:
+# Installation Instructions
+* To install the connector in a virtual environment using the default Python interpreter on the system, run:
 ```sh
 ./setup_venv.sh
+```
+* To explicitly install using "python3" as the interpreter, run
+```sh
+./setup_venv3.sh
 ```
 
 # Run Instructions
 * Rename or copy the example configuration file, example_isi_data_insights_d.cfg, to isi_data_insights_d.cfg. The path ./isi_data_insights_d.cfg is the default configuration file path for the Connector. If you use that name and run the Connector from the source directory then you don't have to use the --config parameter to specify a different configuration file.
-* Next edit the isi_data_insights_d.cfg so that it is setup to query the set of Isilon OneFS clusters that you want to monitor, do this by modifying the config file's clusters parameter.
-* The example configuration file is pre-setup to send several sets of stats to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB. InfluxDB can be installed locally (i.e on the same system as the Connector) or remotely (i.e. on a different system).
-```sh
-sudo apt-get install influxdb
-```
+* Edit isi_data_insights_d.cfg to configure the collector to query the set of Isilon OneFS clusters that you want to monitor. Do this by modifying the config file's clusters parameter.
+* The example configuration file is pre-setup to gather and send several sets of stats to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB. InfluxDB can be installed locally (i.e on the same system as the Connector) or remotely (i.e. on a different system).
+For installation instructions for the current (1.7) version of Influxdb, refer to [this link](https://docs.influxdata.com/influxdb/v1.7/introduction/installation/)
 * If you installed InfluxDB to somewhere other than localhost and/or port 8086 then you'll also need to update the configuration file with the address and port of the InfluxDB.
-* If you did a "Virtual Environment" install then be sure to activate it before running the Connector. Activate the venv by running:
+* Activate the virtualenv it before running the Connector by running:
 ```sh
 . .venv/bin/activate
+```
+or, if you installed the Python 3 version, by running:
+```sh
+. .venv3/bin/activate
 ```
 * To run the Connector:
 ```sh
@@ -37,8 +41,8 @@ sudo apt-get install influxdb
 ```
 
 # Grafana Setup
-Included with the Connector source code are three Grafana dashboards that make it easy to monitor the health and status of your Isilon clusters. To view the dashboards with Grafana, follow these instructions:
-* <a href='http://docs.grafana.org/installation/' taget='_blank'>Install and configure Grafana</a> to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana version 4.3.1. Also, note that the influxdb_plugin.py creates and stores the statistic data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
+Included with the Connector source code are several Grafana dashboards that make it easy to monitor the health and status of your Isilon clusters. To view the dashboards with Grafana, follow these instructions:
+* <a href='http://docs.grafana.org/installation/' target='_blank'>Install and configure Grafana</a> to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana versions up to and including 6.5.1. Also, note that the influxdb_plugin.py creates and stores the statistics data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
 * Import the Grafana dashboards.
  * grafana_cluster_list_dashboard.json
 ![Multi-cluster Summary Dashboard Screen Shot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/master/IsilonDataInsightsMultiClusterSummary.JPG) 
@@ -55,11 +59,11 @@ Import (optional) HDFS specific dashboards:
 * grafana_hadoop_datanodes.json
 ![Hadoop Home Dashboard Screeenshot](https://github.com/isilon/isilon_data_insights_connector/blob/master/HDFS-datanode-1.png)
 
-* If you have already started the Connector then there should be data already in your database and displayed in the dashboards. One common issue that might prevent your dashboards from showing up correctly, is that the date/time on your Isilon clusters is not closely enough in-synch with the date/time used by Grafana, synchronizing the date/time of all the systems to within a few seconds of each other should be enough to fix the issue.
+* If you had previously started the Connector, there should already be data in your database displayed in the dashboards. One common issue that might prevent your dashboards from showing up correctly is if the date/time on your Isilon clusters is not closely enough in-synch with the date/time used by Grafana. Synchronizing the date/time of all the systems to within a few seconds of each other should be enough to fix the issue.
 
 
 # Kapacitor Integration
-Kapacitor (https://www.influxdata.com/time-series-platform/kapacitor/) is an add-on component that when used in conjunction with the Connector enables flexible, configurable, real-time notifications of alert conditions based off the statistics data streaming into the InfluxDB. For more information on how to integrate the Connector and InfluxDB with Kapacitor refer to:
+Kapacitor (https://www.influxdata.com/time-series-platform/kapacitor/) is an add-on component that, when used in conjunction with the Connector enables flexible, configurable, real-time notifications of alert conditions based off the statistics data streaming into the InfluxDB. For more information on how to integrate the Connector and InfluxDB with Kapacitor refer to:
 
 [Kapacitor Integration Instructions](https://github.com/Isilon/isilon_data_insights_connector/blob/master/README_KAPACITOR_INTEGRATION.md)
 
@@ -81,7 +85,6 @@ There are multiple ways for anyone using the Connector to interact with our dev 
 
 * Create a new issue on the “Issues” section.   https://github.com/Isilon/isilon_data_insights_connector/issues
 * The “Discussion” capability of the Isilon SDK Info Hub page.  https://community.emc.com/docs/DOC-48273
-* The most effective is the #isilon channel on codecommunity.slack.com.
 
 Also, just like an other project on github.com we are entirely open to external code contributions:
 
