@@ -5,6 +5,7 @@ scenarios where each thread or client needs to connect to a unique
 cluster. So this class is a custom implementation of the
 isi_sdk.ApiClient that is multi-thread/client safe.
 """
+from builtins import object
 
 
 class IsiApiClient(object):

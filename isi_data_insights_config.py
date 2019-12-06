@@ -3,8 +3,16 @@ This file contains utility functions for configuring the IsiDataInsightsDaemon
 via command line args and config file.
 """
 from __future__ import print_function
+from __future__ import division
+from future import standard_library
+
+standard_library.install_aliases()
+from builtins import input
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import argparse
-import ConfigParser
+import configparser
 import getpass
 import logging
 import os
@@ -48,7 +56,8 @@ MIN_UPDATE_INTERVAL_OVERRIDE_PARAM = "min_update_interval_override"
 
 
 def avg(stat_values):
-    return sum(stat_values) / len(stat_values)
+    # XXX investigate if plain '/' is OK here
+    return old_div(sum(stat_values), len(stat_values))
 
 
 # operations use by ClusterCompositeStatComputer
@@ -129,13 +138,13 @@ def _get_cluster_auth_data(cluster):
     except KeyError:
         # get username and password for input clusters
         if username is None:
-            username = raw_input(
+            username = input(
                 "Please provide the username used to access " + cluster + " via PAPI: "
             )
         if password is None:
             password = getpass.getpass("Password: ")
         while verify_ssl is None:
-            verify_ssl_resp = raw_input("Verify SSL cert [y/n]: ")
+            verify_ssl_resp = input("Verify SSL cert [y/n]: ")
             if verify_ssl_resp == "yes" or verify_ssl_resp == "y":
                 verify_ssl = True
             elif verify_ssl_resp == "no" or verify_ssl_resp == "n":
@@ -298,7 +307,7 @@ def _configure_stat_groups_via_file(
         cluster_list.extend(stat_group_clusters)
         # remove duplicates
         cluster_list = list(set(cluster_list))
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         pass
 
     if len(cluster_list) == 0:
@@ -381,7 +390,7 @@ def _configure_stat_groups_via_file(
         or len(pct_change_stats) > 0
         or len(final_eq_stats) > 0
     ):
-        update_interval_keys = update_intervals.keys()
+        update_interval_keys = list(update_intervals.keys())
         update_interval_keys.sort()
         update_interval = update_interval_keys[0]
         _configure_stat_group(
@@ -395,7 +404,7 @@ def _configure_stat_groups_via_file(
             final_eq_stats,
         )
     else:
-        for update_interval, clusters_stats_tuple in update_intervals.iteritems():
+        for update_interval, clusters_stats_tuple in update_intervals.items():
             # first item in clusters_stats_tuple is the unique list of clusters
             # associated with the current update_interval, the second item is the
             # unique list of stats to query on the set of clusters at the current
@@ -768,7 +777,7 @@ def configure_args_via_file(args):
     config_file = None
     if args.config_file is not None:
         try:
-            config_file = ConfigParser.RawConfigParser()
+            config_file = configparser.RawConfigParser()
             with open(args.config_file, "r") as cfg_fp:
                 config_file.readfp(cfg_fp)
         except Exception as exc:

@@ -2,6 +2,7 @@
 
 # From __future_ imports have to be before everything.
 from __future__ import print_function
+from builtins import str
 
 # Have to do this before importing the other libs
 # The noqa comment prevents spurious E402 flake8 errors

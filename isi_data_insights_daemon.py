@@ -1,3 +1,8 @@
+from __future__ import division
+from builtins import str
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import gevent
 import gevent.pool
 
@@ -82,9 +87,9 @@ class DerivedStatComputer(object):
     def _choose_stat(self, stat):
         LOG.debug("Choose stat: %s", stat.key)
         try:
-            self._selected_stat_timestamps[stat.devid].append(long(stat.time))
+            self._selected_stat_timestamps[stat.devid].append(int(stat.time))
         except KeyError:
-            self._selected_stat_timestamps[stat.devid] = [long(stat.time)]
+            self._selected_stat_timestamps[stat.devid] = [int(stat.time)]
 
     def _create_derived_stat(self, value, devid=0, error=None):
         class DerivedStat(object):
@@ -117,10 +122,12 @@ class DerivedStatComputer(object):
             for node in self._selected_stat_timestamps:
                 tot += sum(self._selected_stat_timestamps[node])
                 tot_count += len(self._selected_stat_timestamps[node])
-            return long(tot / tot_count)
-        return long(
-            sum(self._selected_stat_timestamps[devid])
-            / len(self._selected_stat_timestamps[devid])
+            return int(old_div(tot, tot_count))
+        return int(
+            old_div(
+                sum(self._selected_stat_timestamps[devid]),
+                len(self._selected_stat_timestamps[devid]),
+            )
         )
 
 
@@ -374,14 +381,16 @@ class PercentChangeStatComputer(DerivedStatComputer):
                         str(prev_value),
                     )
                     try:
-                        derived_stat_value = (float(cur_value) / float(prev_value)) - 1
+                        derived_stat_value = (
+                            old_div(float(cur_value), float(prev_value))
+                        ) - 1
                     except ZeroDivisionError:
                         if cur_value == 0 or cur_value == 0.0:
                             # prev_value and cur_value == 0
                             derived_stat_value = 0.0
                         else:
                             derived_stat_value = (
-                                float(prev_value) / float(cur_value)
+                                old_div(float(prev_value), float(cur_value))
                             ) - 1
                             derived_stat_value *= -1.0
                     derived_stat_value *= 100.0
@@ -512,7 +521,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         return len(self._stat_sets)
 
     def get_next_stat_set(self):
-        for update_interval, stat_set in self._stat_sets.iteritems():
+        for update_interval, stat_set in self._stat_sets.items():
             yield update_interval, stat_set
 
     def run(self, debug=False):
@@ -620,7 +629,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         for (
             cluster,
             (stats, composite_stats, eq_stats, pct_change_stats, final_eq_stats),
-        ) in cluster_stats.iteritems():
+        ) in cluster_stats.items():
             self.async_worker_pool.spawn(
                 self._query_and_process_stats1,
                 cluster,
