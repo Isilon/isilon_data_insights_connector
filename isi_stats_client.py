@@ -1,7 +1,6 @@
 from builtins import range
 from builtins import object
 import logging
-import urllib3
 
 
 LOG = logging.getLogger(__name__)

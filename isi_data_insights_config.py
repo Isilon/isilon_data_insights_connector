@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import division
 from future import standard_library
 
-standard_library.install_aliases()
+standard_library.install_aliases()  # noqa: E402
 from builtins import input
 from builtins import str
 from builtins import range
@@ -460,7 +460,7 @@ def _parse_composite_stats(composite_stats_cfg):
                 "Invalid operation %s specified for %s." % (op_name, stat_cfg)
             )
 
-        in_stat_name = stat_cfg[bracket1 + 1 : bracket2]
+        in_stat_name = stat_cfg[bracket1 + 1:bracket2]
         if in_stat_name.startswith("node.") is False:
             raise RuntimeError(
                 "Invalid stat name %s specified for %s."

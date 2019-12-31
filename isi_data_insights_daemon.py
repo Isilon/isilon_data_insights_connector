@@ -638,6 +638,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                 eq_stats,
                 pct_change_stats,
                 final_eq_stats,
+                debug,
             )
         self.async_worker_pool.join()
 
@@ -649,6 +650,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         eq_stats,
         pct_change_stats,
         final_eq_stats,
+        debug,
     ):
         LOG.debug("Querying cluster %s %f", cluster.name, cluster.version)
         LOG.debug("Querying stats %d.", len(stats))
