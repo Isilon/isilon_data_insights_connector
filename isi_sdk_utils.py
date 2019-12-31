@@ -47,7 +47,7 @@ def configure(host, username, password, verify_ssl=False, use_version="detect"):
 
     host_url = "https://" + host + ":8080"
 
-    if use_version is None or use_version is "detect":
+    if use_version is None or use_version == "detect":
         host_version = _detect_host_version(host, username, password, verify_ssl)
     else:
         host_version = use_version
