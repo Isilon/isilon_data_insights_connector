@@ -3,6 +3,7 @@ from builtins import input
 from builtins import str
 from builtins import range
 from builtins import object
+from future.utils import string_types
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBServerError, InfluxDBClientError
 
@@ -164,7 +165,7 @@ def _process_stat_dict(stat_value, fields, tags, prefix=""):
     for key, value in stat_value.items():
         value_type = type(value)
         field_name = prefix + key
-        if (value_type == str) or (key[-2:] == "id" and value_type == int):
+        if isinstance(value, string_types) or (key[-2:] == "id" and value_type == int):
             tags[field_name] = value
         elif value_type == list:
             list_prefix = field_name + SUB_KEY_SEPARATOR
