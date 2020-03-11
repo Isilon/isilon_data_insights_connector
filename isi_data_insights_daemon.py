@@ -139,7 +139,7 @@ class DerivedStatInput(object):
         else:
             self._stat_fields = None
 
-    def _lookup(self, stat_value, field, *fields):
+    def _lookup(self, stat_value, field=None, *fields):
         if fields:
             # if stat_value is not a dict or list then this will raise
             # exception, which is what we want it to do.
