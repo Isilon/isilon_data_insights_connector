@@ -9,6 +9,7 @@ pip install --user virtualenv
 virtualenv $venv_path
 
 . $venv_path/bin/activate
+pip install -U pip setuptools
 pip install -r requirements.txt
 
 echo
