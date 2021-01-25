@@ -1,0 +1,4440 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 10,
+  "iteration": 1606903953760,
+  "links": [],
+  "panels": [
+    {
+      "content": "* Use the pull down at the very top left of the page (next to the spiral icon) to select which dashboard you want to look at.\n* Use the cluster and other pull downs to select the cluster and protocol of interest.\n* Use highlight with your mouse the time period you want to zoom into or use the pull downs at the top right to select specific time periods.\n* Note that by default the dates and time displayed are in your browser’s time zone, not the source cluster.   You can get it to display in UTC via the settings under the little gear symbol at the top of the page.\n* You can hide rows using the green slide-out tab to the left of each chart.\n* If there is a legend displayed you can click on elements within it to hide or display items, etc.\n* Click on the title of the chart and then the horizontal bars icon at the left to show/hide the legend and get a CSV export of the data.\n* There is no significance in whether things are displayed as lines, bars or points - we have used whatever seems to be clearest for the data.\n",
+      "datasource": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 18,
+      "isNew": true,
+      "links": [],
+      "mode": "markdown",
+      "options": {
+        "content": "* Use the pull down at the very top left of the page (next to the spiral icon) to select which dashboard you want to look at.\n* Use the cluster and other pull downs to select the cluster and protocol of interest.\n* Use highlight with your mouse the time period you want to zoom into or use the pull downs at the top right to select specific time periods.\n* Note that by default the dates and time displayed are in your browser’s time zone, not the source cluster.   You can get it to display in UTC via the settings under the little gear symbol at the top of the page.\n* You can hide rows using the green slide-out tab to the left of each chart.\n* If there is a legend displayed you can click on elements within it to hide or display items, etc.\n* Click on the title of the chart and then the horizontal bars icon at the left to show/hide the legend and get a CSV export of the data.\n* There is no significance in whether things are displayed as lines, bars or points - we have used whatever seems to be clearest for the data.\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "7.1.0",
+      "title": "Welcome to the Isilon Detail Dashboard for $cluster",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "content": "<a target=\"_blank\" href=\"https://$cluster:8080/\">WebUI  for $cluster</a><br>\n<a href=/dashboard/db/isilon-data-insights-cluster-summary>Cluster list</a>\n",
+      "datasource": null,
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 0,
+        "y": 7
+      },
+      "id": 22,
+      "isNew": true,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "WebUI",
+          "url": "https://$cluster:8080/"
+        }
+      ],
+      "mode": "html",
+      "options": {
+        "content": "<a target=\"_blank\" href=\"https://$cluster:8080/\">WebUI  for $cluster</a><br>\n<a href=/dashboard/db/isilon-data-insights-cluster-summary>Cluster list</a>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "7.1.0",
+      "title": "$cluster",
+      "type": "text"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 2,
+        "y": 7
+      },
+      "id": 32,
+      "interval": null,
+      "isNew": true,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "WebUI for $cluster",
+          "url": "https://$cluster:8080/"
+        }
+      ],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "max(isilon_cluster_node_count_all{hostname=\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "1,2",
+      "title": "Total Nodes",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "",
+          "value": ""
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 4,
+        "y": 7
+      },
+      "id": 13,
+      "interval": null,
+      "isNew": true,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "WebUI for $cluster",
+          "url": "https://$cluster:8080/"
+        }
+      ],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "max(isilon_cluster_node_count_down{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "1,2",
+      "title": "Nodes Down",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "",
+          "value": ""
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 6,
+        "y": 7
+      },
+      "id": 14,
+      "interval": null,
+      "isNew": true,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "WebUI for $cluster",
+          "url": "https://$cluster:8080/"
+        }
+      ],
+      "mappingType": 2,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "0",
+          "text": "Healthy",
+          "to": "0"
+        },
+        {
+          "from": ".0001",
+          "text": "Attention",
+          "to": "1.999"
+        },
+        {
+          "from": "2",
+          "text": "Down",
+          "to": "5"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "max(isilon_cluster_health{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "0.0001,2",
+      "title": "Alert Status",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "Healthy",
+          "value": "0"
+        },
+        {
+          "op": "=",
+          "text": "Attention",
+          "value": "1"
+        },
+        {
+          "op": "=",
+          "text": "Down",
+          "value": "2"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "percentunit",
+      "gauge": {
+        "maxValue": 1,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 8,
+        "y": 7
+      },
+      "id": 8,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 2,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "1.0 - avg(isilon_cluster_cpu_idle_avg{hostname=~\"$cluster\"})/1000",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "0.80,0.95",
+      "title": "Cluster CPU",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "percent",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 10,
+        "y": 7
+      },
+      "id": 9,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 2,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "100 - avg(isilon_ifs_percent_avail{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "80,90",
+      "title": "Cluster Capacity Utilization",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "Bps",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 12,
+        "y": 7
+      },
+      "id": 33,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_nfs3_total_in_rate{hostname=~\"$cluster\"}+isilon_cluster_protostats_nfs3_total_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv3 Throughput",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "ops",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 14,
+        "y": 7
+      },
+      "id": 20,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_nfs3_total_op_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv3 Op/s",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "ms",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 16,
+        "y": 7
+      },
+      "id": 23,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_nfs3_total_time_avg{hostname=~\"$cluster\"}/1000",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv3 Latency",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "Bps",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 18,
+        "y": 7
+      },
+      "id": 34,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_smb2_total_in_rate{hostname=~\"$cluster\"}+isilon_cluster_protostats_smb2_total_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "SMB2 Throughput",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "ops",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 20,
+        "y": 7
+      },
+      "id": 21,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_smb2_total_op_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "SMB2 Op/s",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "ms",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 22,
+        "y": 7
+      },
+      "id": 24,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_smb2_total_time_avg{hostname=~\"$cluster\"}/1000",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "SMB2 Latency",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 0,
+        "y": 11
+      },
+      "id": 45,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "ifs ops",
+      "targets": [
+        {
+          "expr": "sum(isilon_node_clientstats_active_nfs3{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "nfs3 active clients",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv3 active clients",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 2,
+        "y": 11
+      },
+      "id": 46,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "nfs4 active clients",
+      "targets": [
+        {
+          "expr": "sum(isilon_node_clientstats_active_nfs4{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "nfs4 active clients",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv4 active clients",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 4,
+        "y": 11
+      },
+      "id": 47,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "smb1 active clients",
+      "targets": [
+        {
+          "expr": "sum(isilon_node_clientstats_active_smb1{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "smb1 active clients",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "SMB1 active clients",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 6,
+        "y": 11
+      },
+      "id": 48,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "smb2 active clients",
+      "targets": [
+        {
+          "expr": "sum(isilon_node_clientstats_active_smb2{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "smb2 active clients",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "SMB2 active clients",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 10,
+        "y": 11
+      },
+      "id": 43,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "ifs ops",
+      "targets": [
+        {
+          "expr": "isilon_ifs_ops_in_rate{hostname=~\"$cluster\"}+isilon_ifs_ops_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs ops",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "IFS ops",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "Bps",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 12,
+        "y": 11
+      },
+      "id": 41,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_nfs4_total_in_rate{hostname=~\"$cluster\"}+isilon_cluster_protostats_nfs4_total_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv4 Throughput",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "ops",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 14,
+        "y": 11
+      },
+      "id": 39,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_nfs4_total_op_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv4 Op/s",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "ms",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 16,
+        "y": 11
+      },
+      "id": 40,
+      "interval": null,
+      "isNew": true,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_nfs4_total_time_avg{hostname=~\"$cluster\"}/1000",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "10,25",
+      "title": "NFSv4 Latency",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "hiddenSeries": false,
+      "id": 35,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "100.0 - isilon_ifs_percent_avail{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "utilization",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "custom",
+          "fill": true,
+          "fillColor": "rgba(216, 200, 27, 0.27)",
+          "op": "gt",
+          "value": 80
+        },
+        {
+          "colorMode": "custom",
+          "fill": true,
+          "fillColor": "rgba(234, 112, 112, 0.22)",
+          "op": "gt",
+          "value": 90
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Capacity Utilization",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": "Cluster Capacity Utilization",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "percent",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "hiddenSeries": false,
+      "id": 42,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_ifs_bytes_free{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs_bytes_free",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_ifs_bytes_avail{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs_bytes_avail",
+          "refId": "B"
+        },
+        {
+          "expr": "isilon_ifs_bytes_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs_bytes_total",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "custom",
+          "fill": true,
+          "fillColor": "rgba(216, 200, 27, 0.27)",
+          "op": "gt",
+          "value": 80,
+          "yaxis": "left"
+        },
+        {
+          "colorMode": "custom",
+          "fill": true,
+          "fillColor": "rgba(234, 112, 112, 0.22)",
+          "op": "gt",
+          "value": 90,
+          "yaxis": "left"
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Capacity Bytes",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Cluster Capacity Utilization",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "percent",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "hiddenSeries": false,
+      "id": 44,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_ifs_ssd_bytes_free{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs_ssd_bytes_free",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_ifs_ssd_bytes_avail{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs_ssd_bytes_avail",
+          "refId": "B"
+        },
+        {
+          "expr": "isilon_ifs_ssd_bytes_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs_ssd_bytes_total",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster SSD Capacity Bytes",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Cluster Capacity Utilization",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "percent",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "Idle": "#508642",
+        "System": "#BF1B00",
+        "User": "#EAB839"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 4,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg(isilon_cluster_cpu_intr_avg{hostname=~\"$cluster\"})/1000",
+          "interval": "",
+          "legendFormat": "Interrupt",
+          "refId": "A"
+        },
+        {
+          "expr": "avg(isilon_cluster_cpu_sys_avg{hostname=~\"$cluster\"})/1000",
+          "interval": "",
+          "legendFormat": "System",
+          "refId": "B"
+        },
+        {
+          "expr": "avg(isilon_cluster_cpu_user_avg{hostname=~\"$cluster\"})/1000",
+          "interval": "",
+          "legendFormat": "User",
+          "refId": "C"
+        },
+        {
+          "expr": "avg(isilon_cluster_cpu_idle_avg{hostname=~\"$cluster\"})/1000",
+          "interval": "",
+          "legendFormat": "Idle",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster CPU for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "logBase": 1,
+          "max": 1,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "   ",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "CPU": "#7EB26D",
+        "CPU Idle:": "#508642"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "hiddenSeries": false,
+      "id": 1,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [
+        {
+          "title": "Protocol Detail",
+          "url": "dashboard/db/isilon-data-insights-protocol-detail?$__url_time_range&$__all_variables"
+        }
+      ],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "CPU",
+          "bars": false,
+          "fill": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(isilon_cluster_protostats_http_op_rate{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "http",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(isilon_cluster_protostats_nfs_op_rate{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "nfs",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(isilon_cluster_protostats_nfs4_op_rate{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "nfs4",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(isilon_cluster_protostats_smb2_op_rate{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "smb2",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Protocol Operations for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "label": "Protocol Operations per Second",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "percentunit",
+          "label": "",
+          "logBase": 1,
+          "max": 1,
+          "min": 0,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [
+        {
+          "targetBlank": false,
+          "title": "Protocol Detail",
+          "url": "dashboard/db/isilon-data-insights-protocol-detail?$__url_time_range&$__all_variables"
+        }
+      ],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "expr": "isilon_node_clientstats_active_cifs{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "cifs",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_clientstats_active_nfs{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "nfs",
+          "refId": "B"
+        },
+        {
+          "expr": "isilon_node_clientstats_active_nfs4{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "nfs4",
+          "refId": "C"
+        },
+        {
+          "expr": "isilon_node_clientstats_active_http{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "http",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Active Client Connections by Protocol for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 2,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Connections",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "hiddenSeries": false,
+      "id": 19,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_open_files{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "open files",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Open Files for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 2,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Open File Count",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 64
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/In/",
+          "transform": "negative-Y"
+        },
+        {
+          "alias": "/Packets/",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_cluster_net_ext_bytes_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "bytes in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_cluster_net_ext_bytes_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "bytes out",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Network Traffic for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "Inbound Errors": "#890F02",
+        "Outbound Errors": "#962D82",
+        "cluster.net.ext.bytes.out.rate.mean": "#E24D42",
+        "cluster.net.ext.errors.in.rate.mean": "#BF1B00"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 71
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_cluster_net_ext_errors_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "errors in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_cluster_net_ext_errors_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "errors out",
+          "refId": "B"
+        },
+        {
+          "expr": "isilon_cluster_net_ext_packets_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "packets in",
+          "refId": "C"
+        },
+        {
+          "expr": "isilon_cluster_net_ext_packets_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "packets out",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Network Packets and Errors for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Errors per Second",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 78
+      },
+      "hiddenSeries": false,
+      "id": 53,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/In/",
+          "transform": "negative-Y"
+        },
+        {
+          "alias": "/Packets/",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_net_ext_bytes_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node{{node}} bytes in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_net_ext_bytes_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node{{node}} bytes out",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "By Node Network Traffic for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 85
+      },
+      "hiddenSeries": false,
+      "id": 54,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/In/",
+          "transform": "negative-Y"
+        },
+        {
+          "alias": "/Packets/",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_net_ext_errors_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node{{node}} errors in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_net_ext_errors_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node{{node}} errors out",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "By Node Network Errors for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "Errors",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 92
+      },
+      "hiddenSeries": false,
+      "id": 55,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/In/",
+          "transform": "negative-Y"
+        },
+        {
+          "alias": "/Packets/",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_net_int_bytes_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node{{node}} bytes in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_net_int_bytes_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node{{node}} bytes out",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "By Node Internal Traffic for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 99
+      },
+      "hiddenSeries": false,
+      "id": 17,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/Write/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_ifs_bytes_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs bytes in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_ifs_bytes_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "ifs bytes out",
+          "refId": "B"
+        },
+        {
+          "expr": "isilon_cluster_disk_bytes_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "disk bytes in",
+          "refId": "C"
+        },
+        {
+          "expr": "isilon_cluster_disk_bytes_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "disk bytes out",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster File System and Disk Throughput for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 106
+      },
+      "hiddenSeries": false,
+      "id": 36,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/Write/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_cluster_disk_xfers_in_rate{hostname=~\"$cluster\"}+isilon_cluster_disk_xfers_out_rate{hostname=~\"$cluster\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "disk total",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_cluster_disk_xfers_in_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "disk xfers in",
+          "refId": "C"
+        },
+        {
+          "expr": "isilon_cluster_disk_xfers_out_rate{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "disk xfers out",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Disk operations for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 113
+      },
+      "hiddenSeries": false,
+      "id": 49,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/Write/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_disk_access_latency_avg{hostname=~\"$cluster\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "node {{node}} avg latency",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_disk_access_slow_avg{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node {{node}} disk slow",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Disk Latency for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 120
+      },
+      "hiddenSeries": false,
+      "id": 50,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/Write/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_disk_busy_avg{hostname=~\"$cluster\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "node {{node}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Node Disk Busy for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 127
+      },
+      "hiddenSeries": false,
+      "id": 51,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "/Write/",
+          "transform": "negative-Y"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_disk_bytes_in_rate_avg{hostname=~\"$cluster\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "node {{node}} in",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_disk_bytes_out_rate_avg{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node {{node}} out",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Node Disk Byte Rate for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "none",
+          "label": "Throughput",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "CPU": "#7EB26D"
+      },
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 134
+      },
+      "hiddenSeries": false,
+      "id": 29,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "CPU",
+          "bars": false,
+          "fill": 0,
+          "nullPointMode": "connected",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_cluster_protostats_jobd_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "jobd",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Engine Activity for $cluster",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ops",
+          "label": "Job Engine Operations per Second Count",
+          "logBase": 1,
+          "max": null,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "percentunit",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 141
+      },
+      "hiddenSeries": false,
+      "id": 26,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 500,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_ifs_heat_blocked_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "blocked",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_contended_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "contended",
+          "refId": "B"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_deadlocked_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "deadlocked",
+          "refId": "C"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_getattr_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "getattr",
+          "refId": "D"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_link_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "linktotal",
+          "refId": "E"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_lock_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "lock",
+          "refId": "F"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_lookup_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "lookup",
+          "refId": "G"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_read_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "read",
+          "refId": "H"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_rename_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "rename",
+          "refId": "I"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_setattr_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "setattr",
+          "refId": "J"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_unlink_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "unlink",
+          "refId": "K"
+        },
+        {
+          "expr": "isilon_node_ifs_heat_write_total{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "write",
+          "refId": "L"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "OneFS File System Events for $cluster",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 148
+      },
+      "hiddenSeries": false,
+      "id": 27,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Oldest Page Age",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg(isilon_node_ifs_cache_l1_data_prefetch_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l1_data_prefetch_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L1 Data Prefetch Hit Ratio",
+          "refId": "A"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l1_meta_prefetch_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l1_meta_prefetch_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L1 Meta-Data Prefetch Hit Ratio",
+          "refId": "B"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l1_data_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l1_data_read_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L1 Data Read Hit Ratio",
+          "refId": "C"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l1_meta_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l1_meta_read_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L1 Meta-Data Read Hit Ratio",
+          "refId": "D"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l2_data_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l2_data_read_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L2 Data Read Hit Ratio",
+          "refId": "E"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l2_meta_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l2_meta_read_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L2 Meta-Data Read Hit Ratio",
+          "refId": "F"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l3_data_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l3_data_read_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L3 Data Read Hit Ratio",
+          "refId": "G"
+        },
+        {
+          "expr": "avg(isilon_node_ifs_cache_l3_meta_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l3_meta_read_start{hostname=~\"$cluster\"})",
+          "interval": "",
+          "legendFormat": "L3 Meta-Data Read Hit Ratio",
+          "refId": "H"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cluster Cache Stats for $cluster",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": 0,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 155
+      },
+      "hiddenSeries": false,
+      "id": 52,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pluginVersion": "7.1.4",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Oldest Page Age",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "isilon_node_ifs_cache_l3_data_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l3_data_read_start{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node {{node}} L3 Data Prefetch Hit Ratio",
+          "refId": "A"
+        },
+        {
+          "expr": "isilon_node_ifs_cache_l3_meta_read_hit{hostname=~\"$cluster\"} / isilon_node_ifs_cache_l3_meta_read_start{hostname=~\"$cluster\"}",
+          "interval": "",
+          "legendFormat": "node {{node}} L3 Meta-Data Prefetch Hit Ratio",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Node L3 Cache Stats for $cluster",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": 0,
+          "min": 0,
+          "show": true
+        },
+        {
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allFormat": "regex values",
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "v9000",
+          "value": "v9000"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values({job=\"isilon\"}, hostname)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Cluster",
+        "multi": false,
+        "multiFormat": "glob",
+        "name": "cluster",
+        "options": [],
+        "query": "label_values({job=\"isilon\"}, hostname)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "Isilon Data Insights Cluster Detail",
+  "uid": "Mb1dlCdGk",
+  "version": 13
+}
