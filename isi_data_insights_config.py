@@ -80,7 +80,13 @@ def _process_config_file_clusters(clusters):
     cluster_configs = clusters.split()
     for cluster_config in cluster_configs:
         # expected [username:password@]address[:bool]
+        # the password can potentially contain ":" and "@" characters, split is done
+        # from right side first and then left side to isolate out the password.
         at_split = cluster_config.split("@")
+        if len(at_split) > 2:
+            leftside = "@".join(at_split[:-1])
+            rightside = at_split[-1:]
+            at_split = [leftside, rightside]
         if len(at_split) == 2:
             user_pass_split = at_split[0].split(":", 1)
             if len(user_pass_split) != 2:
