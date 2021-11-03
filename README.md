@@ -5,13 +5,9 @@ The Connector now supports running under either Python 2 or Python 3.
 
 ## Installation Instructions
 
-For detailed instructions on setting up a VM and installing the Connector on the VM refer to:
+The collector was developed and tested on Linux. It is written in Python and believed to be portable, but no testing has been performed on other platforms. It is suggested that a Linux VM be provisioned to run the collector and the InfluxDB and Grafana components.
 
-[Keith Anderson's Blog post on configuring the Collector](https://community.emc.com/blogs/keith/2017/01/26/isilon-data-insights-connector--do-it-yourself-isilon-monitoring)
-
-For a bit less detail, perhaps quicker setup, refer to the instructions below.
-
-It is dangerous and unnecessary to install Python packages as root (sudo pip ...). The data insights collector needs no special privileges and can be installed and run as an unprivileged user. Because of this, the recommended way to install the Connector is via a Python virtual environment. The virtual environment installation installs the required Python dependencies into a [Python Virtual Environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/). The Connector is then run directly from the source directory.
+Please note, it is dangerous and unnecessary to install Python packages as root (sudo pip ...). The data insights collector needs no special privileges and can be installed and run as an unprivileged user. Because of this, the recommended way to install the Connector is via a Python virtual environment. The virtual environment installation installs the required Python dependencies into a [Python Virtual Environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/). The Connector is then run directly from the source directory.
 
 * To install the connector in a virtual environment using the default Python interpreter on the system, run:
 
@@ -25,13 +21,16 @@ It is dangerous and unnecessary to install Python packages as root (sudo pip ...
 ./setup_venv3.sh
 ```
 
+The Grafana visualization component can be downloaded from [here](https://grafana.com/grafana/download?pg=get&plcmt=selfmanaged-box1-cta1)
+
+**Important note** InfluxDB 2.x is incompatible with version 1 and will not work. Please ensure you download and install an InfluxDB version 1.x package (the latest is currently 1.8.10), For installation instructions for the current 1.x (1.8.10) version of Influxdb, refer to [this link](https://portal.influxdata.com/downloads/), scroll down and expand the "Are you interested in InfluxDB 1.x Open Source?" section.
+
 ## Run Instructions
 
 * Rename or copy the example configuration file, example_isi_data_insights_d.cfg, to isi_data_insights_d.cfg. The path ./isi_data_insights_d.cfg is the default configuration file path for the Connector. If you use that name and run the Connector from the source directory then you don't have to use the --config parameter to specify a different configuration file.
 * Edit isi_data_insights_d.cfg to configure the collector to query the set of Isilon OneFS clusters that you want to monitor. Do this by modifying the config file's clusters parameter.
-* The example configuration file is pre-setup to gather and send several sets of stats to InfluxDB via the influxdb_plugin.py. So if you intend to use the default plugin you will need to install InfluxDB. InfluxDB can be installed locally (i.e on the same system as the Connector) or remotely (i.e. on a different system).
-For installation instructions for the current (1.7) version of Influxdb, refer to [this link](https://docs.influxdata.com/influxdb/v1.7/introduction/installation/)
-* If you installed InfluxDB to somewhere other than localhost and/or port 8086 then you'll also need to update the configuration file with the address and port of the InfluxDB.
+* The example configuration file is configured to gather and send several sets of stats to InfluxDB via the influxdb_plugin.py.
+* If you installed InfluxDB to somewhere other than localhost and/or port 8086 then you'll also need to update the configuration file with the address and port of the InfluxDB instance.
 * Activate the virtualenv it before running the Connector by running:
 
 ```sh
@@ -54,7 +53,7 @@ or, if you installed the Python 3 version, by running:
 
 Included with the Connector source code are several Grafana dashboards that make it easy to monitor the health and status of your Isilon clusters. To view the dashboards with Grafana, follow these instructions:
 
-* [Install and configure Grafana](http://docs.grafana.org/installation/) to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana versions up to and including 6.5.1. Also, note that the influxdb_plugin.py creates and stores the statistics data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
+* [Install and configure Grafana](http://docs.grafana.org/installation/) to use the InfluxDB as a data source. Note that the provided Grafana dashboards have been tested to work with Grafana versions up to and including 8,2,2. Also, note that the influxdb_plugin.py creates and stores the statistics data in a database named isi_data_insights. You'll need that information when following the instructions for adding a data source to Grafana. Also, be sure to configure the isi_data_insights data source as the default Grafana data source using the Grafana Dashboard Admin web-interface.
 * Import the Grafana dashboards.
   * grafana_cluster_list_dashboard.json
 ![Multi-cluster Summary Dashboard Screen Shot](https://raw.githubusercontent.com/Isilon/isilon_data_insights_connector/master/IsilonDataInsightsMultiClusterSummary.JPG)
