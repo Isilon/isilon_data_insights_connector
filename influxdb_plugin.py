@@ -50,6 +50,8 @@ def start(argv):
     influxdb_name = argv[2]
     influxdb_ssl = False
     influxdb_verifyssl = False
+    influxdb_username = "root"
+    influxdb_password = "root"
 
     if len(argv) > 3:
         if argv[3] == "auth":
