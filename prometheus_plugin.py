@@ -94,7 +94,7 @@ def _process_dict(tags, basekey, statdict):
     all number values in the dict are metrics. But it contains text members
     and fields named with 'id': Those are filtered out as tags
     '''
-    for k in statdict.keys():
+    for k in list(statdict.keys()):
         if isinstance(statdict[k], string_types) or (k[-2:] == 'id' and isinstance(statdict[k], int)):
             tags[k] = statdict[k]
             del statdict[k]
