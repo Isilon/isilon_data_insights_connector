@@ -6,6 +6,7 @@ from builtins import object
 from future.utils import string_types
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBServerError, InfluxDBClientError
+from ast import literal_eval
 
 import getpass
 import logging
@@ -60,15 +61,17 @@ def start(argv):
         else:
             influxdb_username = argv[3]
             influxdb_password = argv[4]
-            influxdb_ssl = argv[5]
-            influxdb_verifyssl = argv[6]
+            influxdb_ssl = literal_eval(argv[5])
+            influxdb_verifyssl = literal_eval(argv[6])
 
     LOG.info(
-        "Connecting to: %s@%s:%d database:%s.",
+        "Connecting to: %s@%s:%d database:%s ssl=%s verify_ssl=%s.",
         influxdb_username,
         influxdb_host,
         influxdb_port,
         influxdb_name,
+        influxdb_ssl,
+        influxdb_verifyssl,
     )
 
     global g_client
