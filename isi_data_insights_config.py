@@ -79,14 +79,13 @@ def _process_config_file_clusters(clusters):
     cluster_list = []
     cluster_configs = clusters.split()
     for cluster_config in cluster_configs:
+        # default to insecure https
+        verify_ssl = False
+
         # expected [username:password@]address[:bool]
         # the password can potentially contain ":" and "@" characters, split is done
         # from right side first and then left side to isolate out the password.
-        at_split = cluster_config.split("@")
-        if len(at_split) > 2:
-            leftside = "@".join(at_split[:-1])
-            rightside = at_split[-1:]
-            at_split = [leftside, rightside]
+        at_split = cluster_config.rsplit("@", 1)
         if len(at_split) == 2:
             user_pass_split = at_split[0].split(":", 1)
             if len(user_pass_split) != 2:
@@ -99,19 +98,12 @@ def _process_config_file_clusters(clusters):
                 sys.exit(1)
             username = user_pass_split[0]
             password = user_pass_split[1]
-            # If they provide a username and password then verify_ssl defaults
-            # to false. Otherwise, unless they explicity provide it in the
-            # config, we will prompt them for that parameter when we prompt for
-            # the username and password.
-            verify_ssl = False
         else:
             username = None
             password = None
-            verify_ssl = None
         verify_ssl_split = at_split[-1].split(":", 1)
-        if len(verify_ssl_split) == 1:
-            cluster_address = verify_ssl_split[0]
-        else:
+        cluster_address = verify_ssl_split[0]
+        if len(verify_ssl_split) > 1:
             try:
                 # try to convert to a bool
                 verify_ssl = literal_eval(verify_ssl_split[-1])
@@ -124,7 +116,6 @@ def _process_config_file_clusters(clusters):
                     file=sys.stderr,
                 )
                 sys.exit(1)
-            cluster_address = verify_ssl_split[0]
         # add to cache of known cluster auth usernames and passwords
         _add_cluster_auth_data(cluster_address, username, password, verify_ssl)
         cluster_list.append(cluster_address)
