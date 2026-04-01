@@ -1,3 +1,32 @@
+> [!IMPORTANT]
+> ## This project has been superseded
+>
+> Users of this project have likely noticed that it has been moribund for quite some time.
+> Work on a replacement has been happening in the background, but was repeatedly delayed.
+> We apologize for the lack of updates, but are now pleased to announce the availability of
+> a new project that supersedes the Isilon Data Insights Connector.
+>
+> Please check out the new
+> **[PowerScale Data Insights](https://github.com/Isilon/powerscale_data_insights)** project.
+>
+> **Why switch?**
+>
+> - **High-performance Go collectors** replace the Python daemon — compiled, cross-platform
+>   binaries for Linux, macOS, and Windows
+> - **Partitioned Performance collection** — per-export, per-protocol, and per-user I/O
+>   breakdowns (entirely new capability)
+> - **Nine modernized Grafana dashboards** covering cluster health, capacity, protocols,
+>   drives, clients, and more — plus a dashboard generator for custom datasets
+> - **InfluxDB v1 *and* v2 support**, as well as Prometheus
+> - **Docker Compose deployment** — a single command brings up the full stack
+>   (collectors + InfluxDB + Grafana) for instant evaluation
+> - **Live config reload** — no restart needed when you change settings
+> - **Comprehensive documentation** including a
+>   [migration guide](https://github.com/Isilon/powerscale_data_insights/blob/main/docs/migrating-from-v1.md)
+>   for users of this connector
+>
+> **This repository will no longer receive updates.**
+
 # Isilon Data Insights Connector
 
 The isi_data_insights_d.py script controls a daemon process that can be used to query multiple OneFS clusters for statistics data via the Isilon OneFS Platform API (PAPI). The collector uses a pluggable module for processing the results of those queries. The provided stats processor defined in influxdb_plugin.py sends query results to an InfluxDB backend. Additionally, several Grafana dashboards are provided to make it easy to monitor the health and status of your Isilon clusters.
